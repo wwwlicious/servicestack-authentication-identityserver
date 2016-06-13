@@ -9,109 +9,99 @@ Assuming that an existing ServiceStack Instance with a user front-end exists and
 
 ### ServiceStack Instance
 Install the package to your Service Stack Instance:
-<pre>
-<code>
-    PM> Install-Package ServiceStack.Authentication.IdentityServer
-</code>
-</pre>
+```powershell
+PM> Install-Package ServiceStack.Authentication.IdentityServer
+```
 
 Add the following to your AppHost Configure method
-<pre>
-<code>
-    public class AppHost : AppSelfHostBase
+```csharp
+public class AppHost : AppSelfHostBase
+{
+    private readonly string serviceUrl;
+    public AppHost(string serviceUrl) : base("ServiceStack.SelfHost", typeof (MyServices).Assembly) { this.serviceUrl = serviceUrl; }
+
+    public override void Configure(Container container)
     {
-        private readonly string serviceUrl;
-        public AppHost(string serviceUrl) : base("ServiceStack.SelfHost", typeof (MyServices).Assembly) { this.serviceUrl = serviceUrl; }
-
-        public override void Configure(Container container)
+        SetConfig(new HostConfig
         {
-            SetConfig(new HostConfig
-            {
-                // the url:port that IdentityServer will know to redirect to upon succesful login
-                WebHostUrl = serviceUrl
-            });
+            // the url:port that IdentityServer will know to redirect to upon succesful login
+            WebHostUrl = serviceUrl
+        });
 
-            AppSettings.SetUserAuthProvider()
-                       .SetAuthRealm("http://identityserver:5000/")                 // The URL of the IdentityServer instance
-                       .SetClientId("ServiceStack.SelfHost")                        // The Client Identifier so that IdentityServer can identify the service
-                       .SetClientSecret("F621F470-9731-4A25-80EF-67A6F7C5F4B8")     // The Client Secret so that IdentityServer can authorize the service
-                       .SetScopes("openid ServiceStack.SelfHost offline_access");
+        AppSettings.SetUserAuthProvider()
+                   .SetAuthRealm("http://identityserver:5000/")                 // The URL of the IdentityServer instance
+                   .SetClientId("ServiceStack.SelfHost")                        // The Client Identifier so that IdentityServer can identify the service
+                   .SetClientSecret("F621F470-9731-4A25-80EF-67A6F7C5F4B8")     // The Client Secret so that IdentityServer can authorize the service
+                   .SetScopes("openid ServiceStack.SelfHost offline_access");
                        
-            this.Plugins.Add(new IdentityServerAuthFeature());
-        }
+        this.Plugins.Add(new IdentityServerAuthFeature());
     }
-</code>
-</pre>
+}
+```
 
 Decorate a service with the following attribute
-<pre>
-<code>
-    public class SomeService : Service
+```csharp
+public class SomeService : Service
+{
+    [Authenticate(IdentityServerAuthProvider.Name)]
+    public object Any()
     {
-        [Authenticate(IdentityServerAuthProvider.Name)]
-        public object Any()
-        {
-            ...
-        }    
-    }
-</code>
-</pre>
+        ...
+    }    
+}
+```
 
 ### IdentityServer Instance
 
 Add the following Client to the Identity Server Client data store (example below is assuming IdentityServer In-Memory Clients is being used).
-<pre>
-<code>
-    new Client
+```csharp
+new Client
+{
+    ClientName = "ServiceStack.SelfHost",
+    ClientId = "ServiceStack.SelfHost",                                 // The Client Identifier matching the AppSettings.SetClientId() call
+                                                                        // in the ServiceStack AppHost Configure() method above        
+    Enabled = true,
+        
+    AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
+        
+    Flow = Flows.Hybrid,                                                // Uses the Hybrid flow
+
+    ClientSecrets = new List&lt;Secret&gt;
     {
-        ClientName = "ServiceStack.SelfHost",
-        ClientId = "ServiceStack.SelfHost",                                 // The Client Identifier matching the AppSettings.SetClientId() call
-                                                                            // in the ServiceStack AppHost Configure() method above        
-        Enabled = true,
-        
-        AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
-        
-        Flow = Flows.Hybrid,                                                // Uses the Hybrid flow
+        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
+    },                                                                  // in the ServiceStack Setup
 
-        ClientSecrets = new List&lt;Secret&gt;
-        {
-            new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
-        },                                                                  // in the ServiceStack Setup
+    AllowAccessToAllScopes = true,                                      
+    
+    RedirectUris = new List&lt;string&gt;
+    {
+        "http://localhost:5001/auth/IdentityServer"                     // The Address and Provider Uri of the ServiceStack Instance
+    },
 
-        AllowAccessToAllScopes = true,                                      
-        
-        RedirectUris = new List&lt;string&gt;
-        {
-            "http://localhost:5001/auth/IdentityServer"                     // The Address and Provider Uri of the ServiceStack Instance
-        },
-
-        RequireConsent = false                                              // Don't bother prompting for consent
-    }
-</code>
-</pre>
+    RequireConsent = false                                              // Don't bother prompting for consent
+}
+```
 
 Add the following Scope to the Identity Server Scope data store (example below is assuming IdentityServer In-Memory Scope is being used).
-<pre>
-<code>
-    new Scope
-    {
-        Name = "ServiceStack.SelfHost",                                     // The Scope Identity matching the AppSettings.SetClientId() call
-                                                                            // in the ServiceStack AppHost Configure() method above        
-        Enabled = true,
+```csharp
+new Scope
+{
+    Name = "ServiceStack.SelfHost",                                     // The Scope Identity matching the AppSettings.SetClientId() call
+                                                                        // in the ServiceStack AppHost Configure() method above       
+    Enabled = true,
         
-        Type = ScopeType.Identity,
-        Claims = new List&lt;ScopeClaim&gt;
-        {
-            new ScopeClaim(Constants.ClaimTypes.Subject),
-            new ScopeClaim(Constants.ClaimTypes.PreferredUserName)
-        },
-        ScopeSecrets = new List&lt;Secret&gt;
-        {
-            new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
-        }                                                                   // in the ServiceStack Setup
-    }
-</code>
-</pre>
+    Type = ScopeType.Identity,
+    Claims = new List&lt;ScopeClaim&gt;
+    {
+        new ScopeClaim(Constants.ClaimTypes.Subject),
+        new ScopeClaim(Constants.ClaimTypes.PreferredUserName)
+    },
+    ScopeSecrets = new List&lt;Secret&gt;
+    {
+        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
+    }                                                                   // in the ServiceStack Setup
+}
+```
 
 When you start up both the Identity Server Instance and the ServiceStack Instance, you should be redirected to the IdentityServer Instance when you try to access the service you secured with the Authenticate attribute.
 
