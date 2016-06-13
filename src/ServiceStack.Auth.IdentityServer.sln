@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E0581B00-9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer3.Contrib.ServiceStack", "IdentityServer3.Contrib.ServiceStack\IdentityServer3.Contrib.ServiceStack.csproj", "{E46B6750-64F6-4B18-837B-B1DF1FCC8786}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer4.Contrib.ServiceStack", "IdentityServer4.Contrib.ServiceStack\IdentityServer4.Contrib.ServiceStack.xproj", "{DF23A6F3-ACE2-499B-AA2E-E713D3468559}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer3.Contrib.ServiceStack.Tests", "..\test\IdentityServer3.Contrib.ServiceStack.Tests\IdentityServer3.Contrib.ServiceStack.Tests.csproj", "{1254F3F4-2F0C-48E3-8034-CA85F6030EC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.Authentication.IdentityServer.Tests", "..\test\ServiceStack.Authentication.IdentityServer.Tests\ServiceStack.Authentication.IdentityServer.Tests.csproj", "{C8ECF7A1-D436-49F7-9F02-587FA9E11D15}"
@@ -45,10 +43,6 @@ Global
 		{E46B6750-64F6-4B18-837B-B1DF1FCC8786}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E46B6750-64F6-4B18-837B-B1DF1FCC8786}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E46B6750-64F6-4B18-837B-B1DF1FCC8786}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF23A6F3-ACE2-499B-AA2E-E713D3468559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF23A6F3-ACE2-499B-AA2E-E713D3468559}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF23A6F3-ACE2-499B-AA2E-E713D3468559}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF23A6F3-ACE2-499B-AA2E-E713D3468559}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1254F3F4-2F0C-48E3-8034-CA85F6030EC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1254F3F4-2F0C-48E3-8034-CA85F6030EC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1254F3F4-2F0C-48E3-8034-CA85F6030EC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -88,7 +82,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{AA8BA2C5-53F8-42F9-8A38-867F61B0F058} = {454D0072-5514-4AFC-A21A-769CB69809F7}
 		{E46B6750-64F6-4B18-837B-B1DF1FCC8786} = {454D0072-5514-4AFC-A21A-769CB69809F7}
-		{DF23A6F3-ACE2-499B-AA2E-E713D3468559} = {454D0072-5514-4AFC-A21A-769CB69809F7}
 		{1254F3F4-2F0C-48E3-8034-CA85F6030EC7} = {E0581B00-91B9-44B8-953A-C78A9009AFFD}
 		{C8ECF7A1-D436-49F7-9F02-587FA9E11D15} = {E0581B00-91B9-44B8-953A-C78A9009AFFD}
 		{FD52FCE6-7084-4E25-BC03-C996FA1290CD} = {05FEA8B8-73C7-4945-98EF-7CA53BB3B3E0}
