@@ -1,5 +1,7 @@
 # ServiceStack.Authentication.IdentityServer
 
+[![Build status](https://ci.appveyor.com/api/projects/status/bsss6o0r574hen3f/branch/master?svg=true)](https://ci.appveyor.com/project/wwwlicious/servicestack-authentication-identityserver/branch/master)
+
 A plugin for [ServiceStack](https://servicestack.net/) and [IdentityServer](https://identityserver.github.io/) that provides [OpenIDConnect](http://openid.net/connect/) / [OAuth 2.0](http://oauth.net/2/) Single Sign-On Authentication for a Client that consumes other services (e.g. in a microservices-based environment).
 
 This enables a client servicestack instance to be redirected to an IdentityServer instance when they attempt to access a secure service without the necessary credentials.  The user is required to provide credentials to the IdentityServer instance such that on succesful authenticated, the user is redirected back to the servicestack instance which can authorize the user to access the secure service based on claims-based credentials provided by IdentityServer.
