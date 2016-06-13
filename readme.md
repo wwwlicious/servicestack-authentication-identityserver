@@ -66,14 +66,14 @@ new Client
         
     Flow = Flows.Hybrid,                                                // Uses the Hybrid flow
 
-    ClientSecrets = new List&lt;Secret&gt;
+    ClientSecrets = new List<Secret>
     {
         new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
     },                                                                  // in the ServiceStack Setup
 
     AllowAccessToAllScopes = true,                                      
     
-    RedirectUris = new List&lt;string&gt;
+    RedirectUris = new List<string>
     {
         "http://localhost:5001/auth/IdentityServer"                     // The Address and Provider Uri of the ServiceStack Instance
     },
@@ -91,12 +91,12 @@ new Scope
     Enabled = true,
         
     Type = ScopeType.Identity,
-    Claims = new List&lt;ScopeClaim&gt;
+    Claims = new List<ScopeClaim>
     {
         new ScopeClaim(Constants.ClaimTypes.Subject),
         new ScopeClaim(Constants.ClaimTypes.PreferredUserName)
     },
-    ScopeSecrets = new List&lt;Secret&gt;
+    ScopeSecrets = new List<Secret>
     {
         new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
     }                                                                   // in the ServiceStack Setup
