@@ -1,0 +1,11 @@
+﻿@using ImpersonateAuthProvider.ServiceStack.SelfHost.ServiceModel
+@using ServiceStack
+@inherits ServiceStack.Razor.ViewPage
+
+@{
+    ViewBag.Title = "ServiceStack Self Host with Razor";
+}
+
+<h2>Hello World Service</h2>
+
+<p>Access some secure content <a href="@((new Hello { Name = "" }).ToGetUrl())">here!</a></p>

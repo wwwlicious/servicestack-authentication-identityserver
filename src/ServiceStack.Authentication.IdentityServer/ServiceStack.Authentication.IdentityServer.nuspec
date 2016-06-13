@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ServiceStack.Authentication.IdentityServer</id>
+    <version>$version$</version>
+    <authors>Stuart Banks</authors>
+    <licenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</licenseUrl>
+    <!-- <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl> -->
+    <iconUrl>https://servicestack.net/img/logo-32.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A ServiceStack plugin for IdentityServer.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>ServiceStack IdentityServer</tags>
+    <dependencies>
+      <dependency id="ServiceStack" version="[4.0.56, 5)" />
+      <dependency id="IdentityModel" version="1.11.0" />
+      <dependency id="Microsoft.IdentityModel.Protocol.Extensions" version="1.0.2.206221351" />
+      <dependency id="System.IdentityModel.Tokens.Jwt" version="4.0.2.206221351" />
+    </dependencies>
+  </metadata>
+</package>

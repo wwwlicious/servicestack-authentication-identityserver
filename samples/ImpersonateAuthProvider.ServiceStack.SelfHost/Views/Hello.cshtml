@@ -1,0 +1,14 @@
+﻿@using ImpersonateAuthProvider.ServiceStack.SelfHost.ServiceModel
+@using ServiceStack
+@inherits ServiceStack.Razor.ViewPage<HelloResponse>
+
+<h2 style="color:green">@Model.Result</h2>
+
+<p><a href="/">&lt; home</a></p>
+
+<form action="@(new Secure().ToPostUrl())">
+    <div>
+        <input class="form-control input-lg" name="Name" type="text" placeholder="Type your name">
+        <button>Submit</button>
+    </div>
+</form>
