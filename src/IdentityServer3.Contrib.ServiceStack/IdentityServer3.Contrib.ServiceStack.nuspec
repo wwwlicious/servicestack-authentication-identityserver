@@ -5,7 +5,7 @@
     <version>$version$</version>
     <authors>Stuart Banks</authors>
     <licenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</licenseUrl>
-    <!-- <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl> -->
+    <projectUrl>https://github.com/MacLeanElectrical/servicestack-authentication-identityserver</projectUrl>
     <iconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An IdentityServer plugin for ServiceStack Authentication</description>
