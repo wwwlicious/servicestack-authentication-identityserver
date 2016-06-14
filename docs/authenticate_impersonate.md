@@ -2,163 +2,143 @@
 
 ### ServiceStack Instance
 Install the package to your second Service Stack Instance:
-<pre>
-<code>
-    PM> Install-Package ServiceStack.Authentication.IdentityServer
-</code>
-</pre>
+```powershell
+PM> Install-Package ServiceStack.Authentication.IdentityServer
+```
 
 Add the following to your AppHost:
-<pre>
-<code>
-    public class AppHost : AppSelfHostBase
-    {
-        public AppHost() : base("ServiceStack.SelfHost.Api", typeof (MyServices).Assembly) { }
+```csharp
+public class AppHost : AppSelfHostBase
+{
+    public AppHost() : base("ServiceStack.SelfHost.Api", typeof (MyServices).Assembly) { }
         
-        public override void Configure(Container container)
-        {
-            AppSettings.SetImpersonationAuthProvider()                                  // Use the ImpersonationAuthProvider instead of the UserAuthProvider
-                       .SetAuthRealm("http://identityserver:5000/")                     // The URL of the IdentityServer instance
-                       .SetClientId("ServiceStack.SelfHost.Api")                        // The Client Identifier so that IdentityServer can identify the service
-                       .SetClientSecret("F621F470-9731-4A25-80EF-67A6F7C5F4B8")         // The Client Secret so that IdentityServer can authorize the service
-                       .SetScopes("openid ServiceStack.SelfHost.Api offline_access");
+    public override void Configure(Container container)
+    {
+        AppSettings.SetImpersonationAuthProvider()                                  // Use the ImpersonationAuthProvider instead of the UserAuthProvider
+                   .SetAuthRealm("http://identityserver:5000/")                     // The URL of the IdentityServer instance
+                   .SetClientId("ServiceStack.SelfHost.Api")                        // The Client Identifier so that IdentityServer can identify the service
+                   .SetClientSecret("F621F470-9731-4A25-80EF-67A6F7C5F4B8")         // The Client Secret so that IdentityServer can authorize the service
+                   .SetScopes("openid ServiceStack.SelfHost.Api offline_access");
                        
-            this.Plugins.Add(new IdentityServerAuthFeature());
-        }
+        this.Plugins.Add(new IdentityServerAuthFeature());
     }
-</code>
-</pre>
+}
+```
 
 To lock down a service so that the service has to be authenticated, again decorate it with the Authenticate Attribute.
-<pre>
-<code>
-    public class SomeService : Service
+```csharp
+public class SomeService : Service
+{
+    [Authenticate(IdentityServerAuthProvider.Name)]
+    public object Any()
     {
-        [Authenticate(IdentityServerAuthProvider.Name)]
-        public object Any()
-        {
-            ...
-        }    
-    }
-</code>
-</pre>
+        ...
+    }    
+}
+```
 
 To pre-authenticate a Service Client on the first ServiceStack instance so that it can make calls to our new second service, add the following to the IdentityServerAuthFeature constructor:
-<pre>
-<code>
-    public class AppHost : AppSelfHostBase
+```csharp
+public class AppHost : AppSelfHostBase
+{
+    public override void Configure(Container container)
     {
-        public override void Configure(Container container)
-        {
-            AppSettings.SetUserAuthProvider()
-            ...            
-            this.Plugins.Add(new IdentityServerAuthFeature(defaultServiceClient: new JsonServiceClient("http://localhost:5003/"))); // The Url of the new second service
-        }
+        AppSettings.SetUserAuthProvider()
+        ...            
+        this.Plugins.Add(new IdentityServerAuthFeature(defaultServiceClient: new JsonServiceClient("http://localhost:5003/"))); // The Url of the new second service
     }
-</code>
-</pre>
+}
+```
 If the above pre-authentication method is not used, the following must be added to the Authorization header of the http request:
-<pre>
-<code>
+```
     Bearer *ACCESS_TOKEN*
-</code>
-</pre>
+```
 Where *ACCESS_TOKEN* is the AccessToken taken from the authenticated service stack session.  
 
 This can be retrieved when inside a service stack service method using:
-<pre>
-<code>
-    [Authenticate(IdentityServerAuthProvider.Name)]
-    public class SomeService : Service
+```csharp
+[Authenticate(IdentityServerAuthProvider.Name)]
+public class SomeService : Service
+{
+    public object Any(RequestDTO request)
     {
-        public object Any(RequestDTO request)
-        {
-            this.GetSession().GetOAuthTokens(IdentityServerAuthProvider.Name).AccessToken        
-        }
-    }    
-</code>
-</pre>
+        this.GetSession().GetOAuthTokens(IdentityServerAuthProvider.Name).AccessToken        
+    }
+}    
+```
 In addition, the URL of the calling service is required to confirm that the calling service is authorized to provide the above access token. This should be passed in the "Referer" http request header.
 
 
 ### IdentityServer Instance
-Install the package to your IdentityServer Instance - what package? We don't have one yet....
-<pre>
-<code>
-    PM> Install-Package ....whit?
-</code>
-</pre>
+Install the package to your IdentityServer Instance:
+```powershell
+PM> Install-Package IdentityServer3.Contrib.ServiceStack
+```
 
 Add the following to the OWIN startup class of your IdentityServer instance:
-<pre>
-<code>
-    public void Configuration(IAppBuilder app)
-    {
-        var factory = new IdentityServerServiceFactory();
+```csharp
+public void Configuration(IAppBuilder app)
+{
+    var factory = new IdentityServerServiceFactory();
         
-        ...
+    ...
         
-        factory.CustomGrantValidators.Add(new Registration&lt;ICustomGrantValidator, ActAsUserGrantValidator&gt;());
-        
-        ...
-    }
-</code>
-</pre>
+    factory.CustomGrantValidators.Add(new Registration<ICustomGrantValidator, ActAsUserGrantValidator>());
+
+    ...
+}
+```
 
 Add the following Client to the Identity Server Client data store (example below is assuming IdentityServer In-Memory Clients is being used).
-<pre>
-<code>
-    new Client
+```csharp
+new Client
+{
+    ClientName = "ServiceStack.SelfHost.Api",
+    ClientId = "ServiceStack.SelfHost.Api",                             // The Client Identifier matching the AppSettings.SetClientId() call
+                                                                        // in the ServiceStack AppHost Configure() method above        
+    Enabled = true,
+        
+    AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
+        
+    Flow = Flows.Custom,                                                // Uses the Custom flow so that the Custom Grant Validator is used
+        
+    AllowedCustomGrantTypes = new List&lt;string&gt;                    // The Custom Grant Validator we've added above
     {
-        ClientName = "ServiceStack.SelfHost.Api",
-        ClientId = "ServiceStack.SelfHost.Api",                             // The Client Identifier matching the AppSettings.SetClientId() call
-                                                                            // in the ServiceStack AppHost Configure() method above        
-        Enabled = true,
+        ActAsUserGrantValidator.GrantTypeName
+    },
         
-        AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
-        
-        Flow = Flows.Custom,                                                // Uses the Custom flow so that the Custom Grant Validator is used
-        
-        AllowedCustomGrantTypes = new List&lt;string&gt;                    // The Custom Grant Validator we've added above
-        {
-            ActAsUserGrantValidator.GrantTypeName
-        },
-        
-        ClientSecrets = new List&lt;Secret&gt;
-        {
-            new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
-        },                                                                  // in the ServiceStack Setup
+    ClientSecrets = new List&lt;Secret&gt;
+    {
+        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
+    },                                                                  // in the ServiceStack Setup
 
-        AllowedScopes = new List&lt;Secret&gt;                              // Ensure the scope for the new client is referenced.
-        {
-            StandardScopes.OpenId.Name,
-            "ServiceStack.Api.SelfHost"
-        }
+    AllowedScopes = new List&lt;Secret&gt;                              // Ensure the scope for the new client is referenced.
+    {
+        StandardScopes.OpenId.Name,
+        "ServiceStack.Api.SelfHost"
     }
-</code>
-</pre>
+}
+```
 
 Add the following Scope to the Identity Server Scope data store (example below is assuming IdentityServer In-Memory Scopes is being used).
-<pre>
-<code>
-    new Scope
+```csharp
+new Scope
+{
+    Enabled = true,
+    Name = "ServiceStack.Api.SelfHost",
+    Type = ScopeType.Identity,
+
+    Claims = new List<ScopeClaim>
     {
-        Enabled = true,
-        Name = "ServiceStack.Api.SelfHost",
-        Type = ScopeType.Identity,
+        ...
+    },
 
-        Claims = new List&lt;ScopeClaim&gt;
-        {
-            ...
-        },
-
-        ScopeSecrets = new List&lt;Secret&gt;
-        {
-            new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())            
-        }
+    ScopeSecrets = new List<Secret>
+    {
+        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())            
     }
-</pre>
-</pre>
+}
+```
 
 ## What just happened?
 Now when making a request to the exernal ServiceStack Instance the following should occur:

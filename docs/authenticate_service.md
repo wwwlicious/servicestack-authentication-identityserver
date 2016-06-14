@@ -1,18 +1,15 @@
 ## Authenticate as a Service - Quick Start
 ### ServiceStack Instance
 Install the package to your second Service Stack Instance:
-<pre>
-<code>
+```powershell
     PM> Install-Package ServiceStack.Authentication.IdentityServer
-</code>
-</pre>
+```
 
 Add the following to your AppHost:
-<pre>
-<code>
-    public class AppHost : AppSelfHostBase
-    {
-        public AppHost() : base("ServiceStack.SelfHost.Api", typeof (MyServices).Assembly) { }
+```csharp
+public class AppHost : AppSelfHostBase
+{
+    public AppHost() : base("ServiceStack.SelfHost.Api", typeof (MyServices).Assembly) { }
         
         public override void Configure(Container container)
         {
@@ -28,68 +25,61 @@ Add the following to your AppHost:
             
             ...
         }
-    }
-</code>
-</pre>
+}
+```
 
 To lock down a service so that the service has to be authenticated, again decorate it with the Authenticate Attribute.
-<pre>
-<code>
-    public class SomeService : Service
+```csharp
+public class SomeService : Service
+{
+    [Authenticate(IdentityServerAuthProvider.Name)]
+    public object Any()
     {
-        [Authenticate(IdentityServerAuthProvider.Name)]
-        public object Any()
-        {
-            ...
-        }    
-    }
-</code>
-</pre>
+        ...
+    }    
+}
+```
 
 ### IdentityServer Instance
 Add the following Client to the Identity Server Client data store (example below is assuming IdentityServer In-Memory Clients is being used).
-<pre>
-<code>
-    new Client
-    {
-        ClientName = "ServiceStack.SelfHost.Api",
-        ClientId = "ServiceStack.SelfHost.Api",                             // The Client Identifier matching the AppSettings.SetClientId() call
+```csharp
+new Client
+{
+    ClientName = "ServiceStack.SelfHost.Api",
+    ClientId = "ServiceStack.SelfHost.Api",                             // The Client Identifier matching the AppSettings.SetClientId() call
                                                                             // in the ServiceStack AppHost Configure() method above        
-        Enabled = true,
+    Enabled = true,
         
-        AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
+    AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
         
-        Flow = Flows.ClientCredentials,                                     // Uses the Client Credentials flow
+    Flow = Flows.ClientCredentials,                                     // Uses the Client Credentials flow
 
-        ClientSecrets = new List&lt;Secret&gt;
-        {
-            new Secret("6515372c-d1ab-457c-927a-13038007e977".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
-        },                                                                  // in the ServiceStack Setup
+    ClientSecrets = new List&lt;Secret&gt;
+    {
+        new Secret("6515372c-d1ab-457c-927a-13038007e977".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
+    },                                                                  // in the ServiceStack Setup
 
-        AllowedScopes = new List&lt;Secret&gt;                              // Ensure the scope for the new client is referenced.
-        {
-            "ServiceStack.Api.SelfHost"
-        }
+    AllowedScopes = new List&lt;Secret&gt;                              // Ensure the scope for the new client is referenced.
+    {
+        "ServiceStack.Api.SelfHost"
     }
-</code>
-</pre>
+}
+```
 
 Add the following Scope to the Identity Server Scope data store (example below is assuming IdentityServer In-Memory Scopes is being used).
-<pre>
-<code>
-    new Scope
-    {
-        Enabled = true,
-        Name = "ServiceStack.Api.SelfHost",                                 // A Scope that matches the Client Id
-        Type = ScopeType.Identity,
+```csharp
+new Scope
+{
+    Enabled = true,
+    Name = "ServiceStack.Api.SelfHost",                                 // A Scope that matches the Client Id
+    Type = ScopeType.Identity,
 
-        ScopeSecrets = new List&lt;Secret&gt;                               // The Client Secret matching AppSettings.SetClientSecret() call
-        {                                                                   // in the ServiceStack Setup
-            new Secret("6515372c-d1ab-457c-927a-13038007e977".Sha256())
-        }
+    ScopeSecrets = new List&lt;Secret&gt;                               // The Client Secret matching AppSettings.SetClientSecret() call
+    {                                                                   // in the ServiceStack Setup
+        new Secret("6515372c-d1ab-457c-927a-13038007e977".Sha256())
     }
-</code>
-</pre>
+}
+```
 
 ## What just happened?
 Now when making a request to the exernal ServiceStack Instance the following should occur:
