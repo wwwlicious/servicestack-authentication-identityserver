@@ -204,8 +204,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
-            var referrer = GetReferrerUrl(authService, authService.GetSession(), request);
-            return referrer != null && referrer.IndexOf(AuthRealm, StringComparison.InvariantCultureIgnoreCase) == 0;
+            return httpRequest.UrlReferrer != null && 
+                   httpRequest.UrlReferrer.AbsoluteUri.IndexOf(AuthRealm, StringComparison.InvariantCultureIgnoreCase) == 0;
         }
 
         /// <summary>Authenticates the Client by Redirecting them to the Authorize Url Endpoint of Identity Server</summary>
