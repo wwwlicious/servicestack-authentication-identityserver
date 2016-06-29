@@ -83,13 +83,13 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens).ConfigureAwait(false);
             
             // We need to get the user to login as we don't have any credentials for them
-            if (isInitialRequest && !IsCallbackRequest(authService, httpRequest))
+            if (isInitialRequest && !IsCallbackRequest(authService, request))
             {
                 return AuthenticateClient(authService, session, tokens);
             }
 
             // We've just returned from Identity Server so we need to get the tokens we've been given
-            if (IsCallbackRequest(authService, httpRequest))
+            if (IsCallbackRequest(authService, request))
             {
                 // If the tokens are not valid then redirect with an error
                 var authTokens = ParseAuthenticateTokens(httpRequest);
@@ -189,10 +189,11 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// Determines if we have been redirected back from the Identity Server Instance
         /// </summary>
         /// <param name="authService">Authenticating Service</param>
-        /// <param name="httpRequest">Http Request</param>
+        /// <param name="request">Authenticate Request</param>
         /// <returns></returns>
-        internal bool IsCallbackRequest(IServiceBase authService, IRequest httpRequest)
+        internal bool IsCallbackRequest(IServiceBase authService, Authenticate request)
         {
+            var httpRequest = authService.Request;
             if (string.IsNullOrEmpty(httpRequest.AbsoluteUri))
             {
                 return false;
@@ -203,12 +204,14 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
-            return authService.Request.UrlReferrer.AbsoluteUri.IndexOf(AuthRealm, StringComparison.InvariantCultureIgnoreCase) == 0;
+            var referrer = GetReferrerUrl(authService, authService.GetSession(), request);
+            return referrer != null && referrer.IndexOf(AuthRealm, StringComparison.InvariantCultureIgnoreCase) == 0;
         }
 
         /// <summary>Authenticates the Client by Redirecting them to the Authorize Url Endpoint of Identity Server</summary>
         /// <param name="authService">Auth Service</param>
         /// <param name="session">Auth Session</param>
+        /// <param name="authTokens">Auth Tokens</param>
         /// <returns>Http Redirect Result</returns>
         internal IHttpResult AuthenticateClient(IServiceBase authService, IAuthSession session, IAuthTokens authTokens)
         {
