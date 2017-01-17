@@ -183,7 +183,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 // If it has expired and we have a refresh token, refresh the access token.
                 if (tokenResult == TokenValidationResult.Expired && !string.IsNullOrEmpty(authTokens.RefreshToken))
                 {
-                    return await RefreshTokens(authTokens);
+                    return await RefreshTokens(authTokens).ConfigureAwait(false);
                 }
             }
 
@@ -193,7 +193,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         protected async Task<bool> RefreshTokens(IAuthTokens authTokens)
         {
             var refreshResult = await RefreshTokenClient.RefreshToken(authTokens.RefreshToken)
-                                            .ConfigureAwait(false);
+                                                        .ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(refreshResult.AccessToken) && !string.IsNullOrEmpty(refreshResult.RefreshToken))
             {
