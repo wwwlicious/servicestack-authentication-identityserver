@@ -19,7 +19,7 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
 
         public async Task<TokenRefreshResult> RequestCode(string code, string callbackUrl)
         {
-            TokenClient client = new TokenClient(settings.RequestTokenUrl, settings.ClientId, settings.ClientSecret);
+            var client = new TokenClient(settings.RequestTokenUrl, settings.ClientId, settings.ClientSecret);
             var result = await client.RequestAsync(new Dictionary<string, string>
             {
                 {"grant_type", "authorization_code"},

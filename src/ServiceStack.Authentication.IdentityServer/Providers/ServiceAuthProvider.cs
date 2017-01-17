@@ -7,23 +7,12 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     using System.Threading.Tasks;
     using Auth;
     using Clients;
-    using Configuration;
     using Interfaces;
 
     public class ServiceAuthProvider : IdentityServerAuthProvider
     {
         public ServiceAuthProvider(IIdentityServerAuthProviderSettings appSettings)
             : base(appSettings)
-        {
-        }
-
-        public ServiceAuthProvider(IAppSettings appSettings)
-            : base(appSettings)
-        {
-        }
-
-        public ServiceAuthProvider(IAppSettings appSettings, IClientSecretStore clientSecretStore)
-            : base(appSettings, clientSecretStore)
         {
         }
 

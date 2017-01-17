@@ -10,7 +10,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     using System.Threading.Tasks;
     using Auth;
     using Clients;
-    using Configuration;
     using Extensions;
     using IdentityModel;
     using Interfaces;
@@ -24,16 +23,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     {
         public UserAuthProvider(IIdentityServerAuthProviderSettings appSettings)
             : base(appSettings)
-        {
-        }
-
-        public UserAuthProvider(IAppSettings appSettings)
-            : base(appSettings)
-        { 
-        }
-
-        public UserAuthProvider(IAppSettings appSettings, IClientSecretStore clientSecretStore)
-            : base(appSettings, clientSecretStore)
         {
         }
 
@@ -279,6 +268,21 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 session.ProviderOAuthAccess.Add(tokens = new IdentityServerAuthTokens { Provider = Provider });
 
             return tokens;
+        }
+
+        protected override async Task<bool> IsValidAccessToken(IAuthTokens authTokens)
+        {
+            if (string.IsNullOrWhiteSpace(authTokens.AccessToken))
+            {
+                return false;
+            }
+
+            if (authTokens.RefreshTokenExpiry <= DateTime.UtcNow)
+            {
+                return await RefreshTokens(authTokens);
+            }
+
+            return true;
         }
 
         protected override void LoadUserAuthInfo(AuthUserSession userSession, IAuthTokens tokens, Dictionary<string, string> authInfo)

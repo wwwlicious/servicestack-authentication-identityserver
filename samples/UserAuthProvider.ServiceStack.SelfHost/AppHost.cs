@@ -7,7 +7,7 @@ namespace UserAuthProvider.ServiceStack.SelfHost
     using Funq;
     using global::ServiceStack;
     using global::ServiceStack.Authentication.IdentityServer;
-    using global::ServiceStack.Authentication.IdentityServer.Extensions;
+    using global::ServiceStack.Authentication.IdentityServer.Enums;
     using global::ServiceStack.Logging;
     using global::ServiceStack.Razor;
     using ServiceInterface;
@@ -46,12 +46,14 @@ namespace UserAuthProvider.ServiceStack.SelfHost
                 WebHostUrl = serviceUrl
             });
 
-            AppSettings.SetUserAuthProvider()
-                       .SetAuthRealm("http://localhost:5000/")
-                       .SetClientId("UserAuthProvider.ServiceStack.SelfHost")
-                       .SetClientSecret("F621F470-9731-4A25-80EF-67A6F7C5F4B8")
-                       .SetScopes("openid profile UserAuthProvider.ServiceStack.SelfHost email offline_access");
-            this.Plugins.Add(new IdentityServerAuthFeature());
+            this.Plugins.Add(new IdentityServerAuthFeature
+            {
+                AuthProviderType = IdentityServerAuthProviderType.UserAuthProvider,
+                AuthRealm = "http://localhost:5000/",
+                ClientId = "UserAuthProvider.ServiceStack.SelfHost",
+                ClientSecret = "F621F470-9731-4A25-80EF-67A6F7C5F4B8",
+                Scopes = "openid profile UserAuthProvider.ServiceStack.SelfHost email offline_access"
+            });
         }
     }
 }

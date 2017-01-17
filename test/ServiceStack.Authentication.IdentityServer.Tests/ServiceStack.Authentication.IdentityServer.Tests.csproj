@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdentityServerAuthProviderAppSettingsExtensionsTests.cs" />
+    <Compile Include="TestIdentityServerAuthProviderSettings.cs" />
     <Compile Include="UserAuthProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

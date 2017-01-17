@@ -8,7 +8,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     using System.Threading.Tasks;
     using Auth;
     using Clients;
-    using Configuration;
     using Interfaces;
     using Web;
 
@@ -16,16 +15,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     {
         public ImpersonationAuthProvider(IIdentityServerAuthProviderSettings appSettings)
             : base(appSettings)
-        {
-        }
-
-        public ImpersonationAuthProvider(IAppSettings appSettings)
-            : base(appSettings)
-        {
-        }
-
-        public ImpersonationAuthProvider(IAppSettings appSettings, IClientSecretStore clientSecretStore)
-            : base(appSettings, clientSecretStore)
         {
         }
 

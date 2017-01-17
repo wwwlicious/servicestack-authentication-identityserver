@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 namespace ServiceStack.Authentication.IdentityServer.Clients
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using IdentityModel.Client;
@@ -35,7 +36,12 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
                 return new TokenRefreshResult();
             }
 
-            return new TokenRefreshResult {AccessToken = result.AccessToken, RefreshToken = result.RefreshToken};
+            return new TokenRefreshResult
+            {
+                AccessToken = result.AccessToken,
+                RefreshToken = result.RefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddSeconds(result.ExpiresIn)
+            };
         }
     }
 }

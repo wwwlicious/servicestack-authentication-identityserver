@@ -87,12 +87,12 @@
     <Compile Include="Clients\RefreshTokenClient.cs" />
     <Compile Include="Clients\TokenCredentialsClient.cs" />
     <Compile Include="Clients\UserInfoClient.cs" />
+    <Compile Include="ConfigKeys.cs" />
     <Compile Include="DocumentDiscoveryResult.cs" />
     <Compile Include="Enums\IdentityServerAuthProviderType.cs" />
     <Compile Include="Extensions\IdentityServerAuthProviderAppSettingsExtensions.cs" />
     <Compile Include="Extensions\RequestExtensions.cs" />
     <Compile Include="IdentityServerAuthFeature.cs" />
-    <Compile Include="IdentityServerAuthProviderSettings.cs" />
     <Compile Include="IdentityServerAuthTokens.cs" />
     <Compile Include="IdentityServerIdTokenValidator.cs" />
     <Compile Include="DefaultClientSecretStore.cs" />

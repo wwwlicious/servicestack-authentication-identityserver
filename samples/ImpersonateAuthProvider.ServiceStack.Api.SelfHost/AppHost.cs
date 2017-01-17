@@ -6,7 +6,7 @@ namespace ImpersonateAuthProvider.ServiceStack.Api.SelfHost
     using Funq;
     using global::ServiceStack;
     using global::ServiceStack.Authentication.IdentityServer;
-    using global::ServiceStack.Authentication.IdentityServer.Extensions;
+    using global::ServiceStack.Authentication.IdentityServer.Enums;
     using ServiceInterface;
 
     public class AppHost : AppSelfHostBase
@@ -28,15 +28,16 @@ namespace ImpersonateAuthProvider.ServiceStack.Api.SelfHost
         /// <param name="container"></param>
         public override void Configure(Container container)
         {
-            AppSettings.SetImpersonationAuthProvider()
-                       .SetAuthRealm("http://localhost:5000/")
-                       .SetClientId("ImpersonateAuthProvider.ServiceStack.Api.SelfHost")
-                       .SetClientSecret("a9c08d7b-ffc2-49f4-99c9-ce232d9f0cf6")
-                       .SetScopes("openid ImpersonateAuthProvider.ServiceStack.Api.SelfHost")
-                       .SetRoleClaims("ImpersonateAuthProvider.ServiceStack.Api.SelfHost.Role")
-                       .SetPermissionClaims("ImpersonateAuthProvider.ServiceStack.Api.SelfHost.Permission");
-
-            this.Plugins.Add(new IdentityServerAuthFeature());
+            this.Plugins.Add(new IdentityServerAuthFeature
+            {
+                AuthProviderType = IdentityServerAuthProviderType.ImpersonationProvider,
+                AuthRealm = "http://localhost:5000/",
+                ClientId = "ImpersonateAuthProvider.ServiceStack.Api.SelfHost",
+                ClientSecret = "a9c08d7b-ffc2-49f4-99c9-ce232d9f0cf6",
+                Scopes = "openid ImpersonateAuthProvider.ServiceStack.Api.SelfHost",
+                RoleClaims = "ImpersonateAuthProvider.ServiceStack.Api.SelfHost.Role",
+                PermissionClaims = "ImpersonateAuthProvider.ServiceStack.Api.SelfHost.Permission"
+            });
         }
     }
 }

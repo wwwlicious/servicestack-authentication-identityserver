@@ -8,7 +8,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     using System.Threading.Tasks;
     using Auth;
     using Clients;
-    using Configuration;
     using Enums;
     using IdentityModel;
     using Interfaces;
@@ -24,18 +23,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         {
             this.Provider = Name;
             this.AuthProviderSettings = appSettings;
-        }
-
-        protected IdentityServerAuthProvider(IAppSettings appSettings, IClientSecretStore clientSecretStore)
-            : this(new IdentityServerAuthProviderSettings(Name, appSettings, clientSecretStore))
-        {
-
-        }
-
-        protected IdentityServerAuthProvider(IAppSettings appSettings)
-            : this(new IdentityServerAuthProviderSettings(Name, appSettings, new DefaultClientSecretStore(appSettings)))
-        {
-
         }
 
         public virtual async Task Init()
@@ -179,7 +166,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// </summary>
         /// <param name="authTokens">Authentication Token</param>
         /// <returns>True if we have a valid access token</returns>
-        internal async Task<bool> IsValidAccessToken(IAuthTokens authTokens)
+        protected virtual async Task<bool> IsValidAccessToken(IAuthTokens authTokens)
         {
             if (!string.IsNullOrEmpty(authTokens.AccessToken))
             {
@@ -196,18 +183,29 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 // If it has expired and we have a refresh token, refresh the access token.
                 if (tokenResult == TokenValidationResult.Expired && !string.IsNullOrEmpty(authTokens.RefreshToken))
                 {
-                    var refreshResult = await RefreshTokenClient.RefreshToken(authTokens.RefreshToken)
-                                                                .ConfigureAwait(false);
-
-                    if (!string.IsNullOrEmpty(refreshResult.AccessToken) && !string.IsNullOrEmpty(refreshResult.RefreshToken))
-                    {
-                        authTokens.AccessToken = refreshResult.AccessToken;
-                        authTokens.RefreshToken = refreshResult.RefreshToken;
-                        return true;
-                    }
+                    return await RefreshTokens(authTokens);
                 }
             }
 
+            return false;
+        }
+
+        protected async Task<bool> RefreshTokens(IAuthTokens authTokens)
+        {
+            var refreshResult = await RefreshTokenClient.RefreshToken(authTokens.RefreshToken)
+                                            .ConfigureAwait(false);
+
+            if (!string.IsNullOrEmpty(refreshResult.AccessToken) && !string.IsNullOrEmpty(refreshResult.RefreshToken))
+            {
+                authTokens.AccessToken = refreshResult.AccessToken;
+                authTokens.RefreshToken = refreshResult.RefreshToken;
+                authTokens.RefreshTokenExpiry = refreshResult.ExpiresAt;
+                return true;
+            }
+
+            authTokens.AccessToken = null;
+            authTokens.RefreshToken = null;
+            authTokens.RefreshTokenExpiry = null;
             return false;
         }
     }

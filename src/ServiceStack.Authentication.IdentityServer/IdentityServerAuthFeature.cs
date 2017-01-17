@@ -4,33 +4,39 @@
 namespace ServiceStack.Authentication.IdentityServer
 {
     using System;
+    using System.Collections.Generic;
     using Auth;
     using Configuration;
     using Enums;
-    using Extensions;
     using Interfaces;
     using Providers;
     using Web;
 
-    public class IdentityServerAuthFeature : IPlugin
+    public class IdentityServerAuthFeature : IPlugin, IIdentityServerAuthProviderSettings
     {
         private readonly ServiceClientBase defaultServiceClient;
+        private readonly IAppSettings appSettings;
         private IClientSecretStore clientSecretStore;
+
+        private IdentityServerAuthProviderType providerType;
 
         private string referrerUrl;
 
-        public IdentityServerAuthFeature(ServiceClientBase defaultServiceClient = null)
+        public IdentityServerAuthFeature(IAppSettings appSettings = null, ServiceClientBase defaultServiceClient = null)
         {
+            this.appSettings = appSettings ?? new AppSettings();
             this.defaultServiceClient = defaultServiceClient;
+
+            this.providerType = IdentityServerAuthProviderType.UserAuthProvider;
         }
 
         public virtual void Register(IAppHost appHost)
         {
             ValidateCallbackRequirements(appHost);
 
-            clientSecretStore = appHost.TryResolve<IClientSecretStore>() ?? new DefaultClientSecretStore(appHost.AppSettings);
+            clientSecretStore = appHost.TryResolve<IClientSecretStore>() ?? new DefaultClientSecretStore(appSettings);
 
-            var provider = ProviderFactory(appHost.AppSettings, clientSecretStore);
+            var provider = ProviderFactory();
 
             appHost.LoadPlugin(
                 new AuthFeature(() => new AuthUserSession(),
@@ -49,7 +55,7 @@ namespace ServiceStack.Authentication.IdentityServer
 
         private void ValidateCallbackRequirements(IAppHost appHost)
         {
-            if (appHost.AppSettings.GetProviderType() != IdentityServerAuthProviderType.UserAuthProvider) return;
+            if (providerType != IdentityServerAuthProviderType.UserAuthProvider) return;
 
             if (appHost.Config?.WebHostUrl == null)
             {
@@ -58,24 +64,25 @@ namespace ServiceStack.Authentication.IdentityServer
                     "the service can sent it's full http://url:port to the Identity Server User Login");
             }
 
-            referrerUrl = appHost.Config?.WebHostUrl;            
+            referrerUrl = appHost.Config?.WebHostUrl;
+            
             appHost.AppSettings.Set($"oauth.{IdentityServerAuthProvider.Name}.CallbackUrl", $"{referrerUrl}auth/{IdentityServerAuthProvider.Name}");
         }
 
-        private static IIdentityServerProvider ProviderFactory(IAppSettings appSettings, IClientSecretStore clientSecretStore)
+        private IIdentityServerProvider ProviderFactory()
         {
             IIdentityServerProvider provider;
 
-            switch (appSettings.GetProviderType())
+            switch (providerType)
             {
                 case IdentityServerAuthProviderType.UserAuthProvider:
-                    provider = new UserAuthProvider(appSettings, clientSecretStore);
+                    provider = new UserAuthProvider(this);
                     break;
                 case IdentityServerAuthProviderType.ServiceProvider:
-                    provider = new ServiceAuthProvider(appSettings, clientSecretStore);
+                    provider = new ServiceAuthProvider(this);
                     break;
                 default:
-                    provider = new ImpersonationAuthProvider(appSettings, clientSecretStore);
+                    provider = new ImpersonationAuthProvider(this);
                     break;
             }
 
@@ -107,6 +114,108 @@ namespace ServiceStack.Authentication.IdentityServer
                 oauth_token = authTokens.AccessToken,
                 oauth_verifier = $"{referrerUrl}auth/{IdentityServerAuthProvider.Name}"
             });
+        }
+
+        //public IAppSettings AppSettings { get; set; }
+        public DocumentDiscoveryResult DiscoveryResult { get; set; }
+
+        public IdentityServerAuthProviderType AuthProviderType
+        {
+            set { providerType = value; }
+        }
+
+        public string AuthRealm
+        {
+            get { return appSettings.Get(ConfigKeys.AuthRealm, "http://127.0.0.1:8080/"); }
+            set { appSettings.Set(ConfigKeys.AuthRealm, value); }
+        }
+
+        public string AuthorizeUrl
+        {
+            get
+            {
+                if (DiscoveryResult != null) return DiscoveryResult.AuthorizeUrl;
+                return appSettings.Get(ConfigKeys.AuthorizeUrl, $"{AuthRealm}connect/authorize");
+            }
+            set { appSettings.Set(ConfigKeys.AuthorizeUrl, value); }
+        }
+
+        public string IntrospectUrl
+        {
+            get
+            {
+                if (DiscoveryResult != null) return DiscoveryResult.IntrospectUrl;
+                return appSettings.Get(ConfigKeys.IntrospectUrl, $"{AuthRealm}connect/introspect");
+            }
+            set { appSettings.Set(ConfigKeys.IntrospectUrl, value); }
+        }
+
+        public string UserInfoUrl
+        {
+            get
+            {
+                if (DiscoveryResult != null) return DiscoveryResult.UserInfoUrl;
+                return appSettings.Get(ConfigKeys.UserInfoUrl, $"{AuthRealm}connect/userinfo");
+            }
+            set { appSettings.Set(ConfigKeys.UserInfoUrl, value); }
+        }
+
+        public string RequestTokenUrl
+        {
+            get
+            {
+                if (DiscoveryResult != null) return DiscoveryResult.TokenUrl;
+                return appSettings.Get(ConfigKeys.TokenUrl, $"{AuthRealm}connect/token");
+            }
+            set { appSettings.Set(ConfigKeys.TokenUrl, value); }
+        }
+
+        public string CallbackUrl
+        {
+            get { return appSettings.Get(ConfigKeys.CallbackUrl, $"{referrerUrl}auth/IdentityServer"); }
+            set { appSettings.Set(ConfigKeys.CallbackUrl, value); }
+        }
+
+        public string ClientId
+        {
+            get { return appSettings.Get(ConfigKeys.ClientId, "ClientId"); }
+            set { appSettings.Set(ConfigKeys.ClientId, value); }
+        }
+
+        public string ClientSecret
+        {
+            get { return clientSecretStore.GetSecretAsync(ClientId).Result; }
+            set { appSettings.Set(ConfigKeys.ClientSecret, value); }
+        }
+
+        public string JwksUrl
+        {
+            get
+            {
+                if (DiscoveryResult != null) return DiscoveryResult.JwksUrl;
+                return appSettings.Get(ConfigKeys.JwksUrl, $"{ AuthRealm}.well-known/");
+            }
+            set { appSettings.Set(ConfigKeys.JwksUrl, value); }
+        }
+
+        public string Scopes
+        {
+            get { return appSettings.Get(ConfigKeys.ClientScopes, "openid"); }
+            set { appSettings.Set(ConfigKeys.ClientScopes, value); }
+        }
+
+        public IList<string> RoleClaimNames => appSettings.GetList(ConfigKeys.RoleClaims);
+
+        public string RoleClaims
+        {
+            set { appSettings.Set(ConfigKeys.RoleClaims, value); }
+        }
+
+        public IList<string> PermissionClaimNames => appSettings.GetList(ConfigKeys.PermissionClaimNames);
+
+        public string PermissionClaims
+        {
+            set { appSettings.Set(ConfigKeys.PermissionClaimNames, value); }
         }
     }
 }

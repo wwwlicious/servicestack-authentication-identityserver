@@ -3,48 +3,73 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 namespace ServiceStack.Authentication.IdentityServer.Extensions
 {
+    using System;
     using Configuration;
     using Enums;
-    using Providers;
 
     public static class IdentityServerAuthProviderAppSettingsExtensions
     {
         private static IAppSettings SetProviderType(this IAppSettings appSettings, IdentityServerAuthProviderType providerType)
         {
-            appSettings.Set("oauth.provider", providerType);
+            appSettings.Set(ConfigKeys.OauthProvider, providerType);
             return appSettings;
         }
 
+        [Obsolete("Use public property on IdentityServerAuthFeature.AuthProviderTyp=IdentityServerAuthProviderType.UserAuthProvider")]
         public static IAppSettings SetUserAuthProvider(this IAppSettings appSettings) => appSettings.SetProviderType(IdentityServerAuthProviderType.UserAuthProvider);
 
+        [Obsolete("Use public property on IdentityServerAuthFeature.AuthProviderType=IdentityServerAuthProviderType.ImpersonationProvider")]
         public static IAppSettings SetImpersonationAuthProvider(this IAppSettings appSettings) => appSettings.SetProviderType(IdentityServerAuthProviderType.ImpersonationProvider);
 
+        [Obsolete("Use public property on IdentityServerAuthFeature.AuthProviderType = IdentityServerAuthProviderType.ServiceProvide")]
         public static IAppSettings SetServiceAuthProvider(this IAppSettings appSettings) => appSettings.SetProviderType(IdentityServerAuthProviderType.ServiceProvider);
 
-        public static IdentityServerAuthProviderType GetProviderType(this IAppSettings appSettings) => appSettings.Get<IdentityServerAuthProviderType>("oauth.provider");
-        
-        public static IAppSettings SetOauthSetting(this IAppSettings appSettings, string name, string value)
+        [Obsolete("Use public property IdentityServerAuthFeature.AuthRealm")]
+        public static IAppSettings SetAuthRealm(this IAppSettings appSettings, string realm)
         {
-            appSettings.Set($"oauth.{IdentityServerAuthProvider.Name}.{name}", value);
+            appSettings.Set(ConfigKeys.AuthRealm, realm);
             return appSettings;
         }
 
-        public static string GetOauthSetting(this IAppSettings appSettings, string name) => appSettings.Get<string>($"oauth.{IdentityServerAuthProvider.Name}.{name}");        
+        [Obsolete("Use public property IdentityServerAuthFeature.AuthRealm")]
+        public static string GetAuthRealm(this IAppSettings appSettings) => appSettings.GetString(ConfigKeys.AuthRealm);
 
-        public static IAppSettings SetAuthRealm(this IAppSettings appSettings, string realm) => appSettings.SetOauthSetting("AuthRealm", realm);
+        [Obsolete("Use public property IdentityServerAuthFeature.ClientId")]
+        public static IAppSettings SetClientId(this IAppSettings appSettings, string clientId)
+        {
+            appSettings.Set(ConfigKeys.ClientId, clientId);
+            return appSettings;
+        }
 
-        public static string GetAuthRealm(this IAppSettings appSettings) => appSettings.GetOauthSetting("AuthRealm");
+        [Obsolete("Use public property IdentityServerAuthFeature.ClientId")]
+        public static string GetClientId(this IAppSettings appSettings) => appSettings.GetString(ConfigKeys.ClientId);
 
-        public static IAppSettings SetClientId(this IAppSettings appSettings, string clientId) => appSettings.SetOauthSetting("ClientId", clientId);
+        [Obsolete("Use public property IdentityServerAuthFeature.ClientSecret")]
+        public static IAppSettings SetClientSecret(this IAppSettings appSettings, string clientSecret)
+        {
+            appSettings.Set(ConfigKeys.ClientSecret, clientSecret);
+            return appSettings;
+        }
 
-        public static string GetClientId(this IAppSettings appSettings) => appSettings.GetOauthSetting("ClientId");
+        [Obsolete("Use public property IdentityServerAuthFeature.Scopes")]
+        public static IAppSettings SetScopes(this IAppSettings appSettings, string scopes)
+        {
+            appSettings.Set(ConfigKeys.ClientScopes, scopes);
+            return appSettings;
+        }
 
-        public static IAppSettings SetClientSecret(this IAppSettings appSettings, string clientSecret) => appSettings.SetOauthSetting("ClientSecret", clientSecret);
+        [Obsolete("Use public property IdentityServerAuthFeature.RoleClaimNames")]
+        public static IAppSettings SetRoleClaims(this IAppSettings appSettings, string roles)
+        {
+            appSettings.Set(ConfigKeys.RoleClaims, roles);
+            return appSettings;
+        }
 
-        public static IAppSettings SetScopes(this IAppSettings appSettings, string scopes) => appSettings.SetOauthSetting("Scopes", scopes);
-
-        public static IAppSettings SetRoleClaims(this IAppSettings appSettings, string roles) => appSettings.SetOauthSetting("RoleClaimNames", roles);
-
-        public static IAppSettings SetPermissionClaims(this IAppSettings appSettings, string permissions) => appSettings.SetOauthSetting("PermissionClaimNames", permissions);
+        [Obsolete("Use public property IdentityServerAuthFeature.PermissionClaimNames")]
+        public static IAppSettings SetPermissionClaims(this IAppSettings appSettings, string permissions)
+        {
+            appSettings.Set(ConfigKeys.PermissionClaimNames, permissions);
+            return appSettings;
+        }
     }
 }

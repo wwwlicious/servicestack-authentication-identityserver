@@ -3,8 +3,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 namespace ServiceStack.Authentication.IdentityServer
 {
+    using System;
+
     public class TokenRefreshResult : TokenResult
     {
         public string RefreshToken { get; set; }
+
+        public DateTime ExpiresAt { get; set; }
     }
 }

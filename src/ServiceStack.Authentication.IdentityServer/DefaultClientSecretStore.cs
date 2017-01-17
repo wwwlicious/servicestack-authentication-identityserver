@@ -5,12 +5,12 @@ namespace ServiceStack.Authentication.IdentityServer
 {
     using System.Threading.Tasks;
     using Configuration;
-    using Extensions;
     using Interfaces;
 
     class DefaultClientSecretStore : IClientSecretStore
     {
         private readonly IAppSettings appSettings;
+
         public DefaultClientSecretStore(IAppSettings appSettings)
         {
             this.appSettings = appSettings;
@@ -18,7 +18,7 @@ namespace ServiceStack.Authentication.IdentityServer
 
         public Task<string> GetSecretAsync(string clientId)
         {
-            return Task.FromResult(appSettings.GetOauthSetting("ClientSecret"));
+            return Task.FromResult(appSettings.GetString(ConfigKeys.ClientSecret));
         }
     }
 }

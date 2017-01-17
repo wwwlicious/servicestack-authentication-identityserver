@@ -6,7 +6,7 @@ namespace ServiceAuthProvider.ServiceStack.Api.SelfHost
     using Funq;
     using global::ServiceStack;
     using global::ServiceStack.Authentication.IdentityServer;
-    using global::ServiceStack.Authentication.IdentityServer.Extensions;
+    using global::ServiceStack.Authentication.IdentityServer.Enums;
     using global::ServiceStack.Logging;
     using ServiceInterface;
 
@@ -29,13 +29,14 @@ namespace ServiceAuthProvider.ServiceStack.Api.SelfHost
         /// <param name="container"></param>
         public override void Configure(Container container)
         {
-            AppSettings.SetServiceAuthProvider()
-                       .SetAuthRealm("http://localhost:5000/")
-                       .SetClientId("ServiceAuthProvider.ServiceStack.Api.SelfHost")
-                       .SetClientSecret("358bbaad-7921-4785-999e-adfbef1eb1d1")
-                       .SetScopes("ServiceAuthProvider.ServiceStack.Api.SelfHost");
-
-            this.Plugins.Add(new IdentityServerAuthFeature());
+            this.Plugins.Add(new IdentityServerAuthFeature
+            {
+                AuthProviderType = IdentityServerAuthProviderType.ServiceProvider,
+                AuthRealm = "http://localhost:5000/",
+                ClientId = "ServiceAuthProvider.ServiceStack.Api.SelfHost",
+                ClientSecret = "358bbaad-7921-4785-999e-adfbef1eb1d1",
+                Scopes = "ServiceAuthProvider.ServiceStack.Api.SelfHost"
+            });
         }
     }
 }

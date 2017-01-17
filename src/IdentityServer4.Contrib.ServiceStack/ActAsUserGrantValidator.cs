@@ -6,57 +6,64 @@ namespace IdentityServer4.Contrib.ServiceStack
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Core.Validation;
     using IdentityModel;
+    using Models;
+    using Validation;
 
-    public class ActAsUserGrantValidator : ICustomGrantValidator
+    public class ActAsUserGrantValidator : IExtensionGrantValidator
     {
         public const string GrantTypeName = "act-as-user";
 
-        private readonly TokenValidator validator;
+        private readonly ITokenValidator validator;
 
         /// <summary>Constructor</summary>
         /// <param name="validator">Token Validator</param>
-        public ActAsUserGrantValidator(TokenValidator validator)
+        public ActAsUserGrantValidator(ITokenValidator validator)
         {
             this.validator = validator;
         }
 
         /// <summary>Validates the Custom grant request</summary>
-        /// <param name="request"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
+        public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {
-            var userAccessToken = request.Raw.Get("access_token");
-            var clientRefererToken = request.Raw.Get("client_referer");
+            var userAccessToken = context.Request.Raw.Get("access_token");
+            var clientRefererToken = context.Request.Raw.Get("client_referer");
+
             if (string.IsNullOrWhiteSpace(userAccessToken))
             {
-                return new CustomGrantValidationResult(Core.Resources.Messages.invalid_request);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return;
             }
+
             if (string.IsNullOrWhiteSpace(clientRefererToken))
             {
-                return new CustomGrantValidationResult(Core.Resources.Messages.invalid_request);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return;
             }
 
             var result = await validator.ValidateAccessTokenAsync(userAccessToken).ConfigureAwait(false);
             if (result.IsError || result.Claims == null)
             {
-                return new CustomGrantValidationResult(Core.Resources.Messages.invalid_request);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return;
             }
 
             var subjectClaim = result.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (subjectClaim == null)
             {
-                return new CustomGrantValidationResult(Core.Resources.Messages.invalid_request);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return;
             }
 
             var client = result.Client;
             if (client == null || !client.RedirectUris.Any(x => x.IndexOf(clientRefererToken, StringComparison.OrdinalIgnoreCase) >= 0))
             {
-                return new CustomGrantValidationResult(Core.Resources.Messages.invalid_request);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);                
             }
 
-            return new CustomGrantValidationResult(subjectClaim.Value, "access_token");
+            context.Result = new GrantValidationResult(subjectClaim.Value, "access_token");
         }
 
         public string GrantType => GrantTypeName;

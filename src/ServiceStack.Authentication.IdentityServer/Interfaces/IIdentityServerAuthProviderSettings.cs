@@ -4,12 +4,9 @@
 namespace ServiceStack.Authentication.IdentityServer.Interfaces
 {
     using System.Collections.Generic;
-    using Configuration;
 
     public interface IIdentityServerAuthProviderSettings
     {
-        IAppSettings AppSettings { get; set; }
-
         DocumentDiscoveryResult DiscoveryResult { get; set; }
 
         string AuthRealm { get; }
