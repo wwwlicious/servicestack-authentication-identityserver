@@ -33,14 +33,15 @@ public class AppHost : AppSelfHostBase
             // the url:port that IdentityServer will know to redirect to upon succesful login
             WebHostUrl = serviceUrl
         });
-
-        AppSettings.SetUserAuthProvider()
-                   .SetAuthRealm("http://identityserver:5000/")                 // The URL of the IdentityServer instance
-                   .SetClientId("ServiceStack.SelfHost")                        // The Client Identifier so that IdentityServer can identify the service
-                   .SetClientSecret("F621F470-9731-4A25-80EF-67A6F7C5F4B8")     // The Client Secret so that IdentityServer can authorize the service
-                   .SetScopes("openid ServiceStack.SelfHost offline_access");
                        
-        this.Plugins.Add(new IdentityServerAuthFeature());
+        this.Plugins.Add(new IdentityServerAuthFeature 
+        {
+            AuthProviderType = IdentityServerAuthProviderType.UserAuthProvider,
+            AuthRealm = "http://identityserver:5000/",                          // The URL of the IdentityServer instance
+            ClientId = "ServiceStack.SelfHost",                                 // The Client Identifier so that IdentityServer can identify the service
+            ClientSecret = "F621F470-9731-4A25-80EF-67A6F7C5F4B8",              // The Client Secret so that IdentityServer can authorize the service
+            Scopes = "openid ServiceStack.SelfHost offline_access"
+        });
     }
 }
 ```
@@ -57,14 +58,14 @@ public class SomeService : Service
 }
 ```
 
-### IdentityServer Instance
+### IdentityServer3 Instance
 
 Add the following Client to the Identity Server Client data store (example below is assuming IdentityServer In-Memory Clients is being used).
 ```csharp
 new Client
 {
     ClientName = "ServiceStack.SelfHost",
-    ClientId = "ServiceStack.SelfHost",                                 // The Client Identifier matching the AppSettings.SetClientId() call
+    ClientId = "ServiceStack.SelfHost",                                 // The Client Identifier matching the IdentityServerAuthFeature.ClientId call
                                                                         // in the ServiceStack AppHost Configure() method above        
     Enabled = true,
         
@@ -74,7 +75,7 @@ new Client
 
     ClientSecrets = new List<Secret>
     {
-        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching AppSettings.SetClientSecret() call
+        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching IdentityServerAuthFeature.ClientSecret call
     },                                                                  // in the ServiceStack Setup
 
     AllowAccessToAllScopes = true,                                      
@@ -92,7 +93,7 @@ Add the following Scope to the Identity Server Scope data store (example below i
 ```csharp
 new Scope
 {
-    Name = "ServiceStack.SelfHost",                                     // The Scope Identity matching the AppSettings.SetClientId() call
+    Name = "ServiceStack.SelfHost",                                     // The Scope Identity matching the IdentityServerAuthFeature.ClientId call
                                                                         // in the ServiceStack AppHost Configure() method above       
     Enabled = true,
         
@@ -108,6 +109,63 @@ new Scope
     }                                                                   // in the ServiceStack Setup
 }
 ```
+
+### IdentityServer4 Instance
+IdentityServer4 is the dotnet core implementation of IdentityServer.  It differs from IdentityServer3 in that it no longer provides a UI.  For an example of a custom UI implementation of IdentityServer4 using asp.net core please refer to the [IdentityServer4.Quickstart.UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI) project.
+
+Add the following Client to the Identity Server Client data store (example below is assuming IdentityServer In-Memory Clients is being used).
+```csharp
+new Client
+{
+    ClientName = "ServiceStack.SelfHost",
+    ClientId = "ServiceStack.SelfHost",                                 // The Client Identifier matching the IdentityServerAuthFeature.ClientId call
+                                                                        // in the ServiceStack AppHost Configure() method above    
+
+    Enabled = true,
+
+    AccessTokenType = AccessTokenType.Jwt,                              // The AccessToken encryption type
+                    
+    AllowedGrantTypes = GrantTypes.Hybrid,                              // Uses the Hybrid flow
+
+    ClientSecrets = new List<Secret>
+    {
+        new Secret("F621F470-9731-4A25-80EF-67A6F7C5F4B8".Sha256())     // The Client Secret matching IdentityServerAuthFeature.ClientSecret call
+    },                                                                  // in the ServiceStack Setup
+
+    RedirectUris = new List<string>
+    {
+        "http://localhost:5001/auth/IdentityServer"                     // The Address and Provider Uri of the ServiceStack Instance
+    },
+
+    AllowedScopes = new List<string>                                    // The requested scopes. Should match IdentityServerAuthFeature.Scopes
+    {
+        IdentityServerConstants.StandardScopes.OpenId,
+        "ServiceStack.SelfHost"
+    },
+
+    AllowOfflineAccess = true,                                          // Set to true if requesting the offline_access scope
+
+    RequireConsent = false                                              // Don't bother prompting for consent
+}
+
+Add the following Identity Resources (same as Identity Scopes) to the Identity Server IdentityResource data store (example below is assuming IdentityServer In-Memory IdentityResource is being used).
+```csharp
+new List<IdentityResource>
+{
+    new IdentityServer4.Models.IdentityResources.OpenId(),
+    new IdentityResource
+    {
+        Name = "ServiceStack.SelfHost",
+        Enabled = true,
+        UserClaims = new List<string>
+        {
+            JwtClaimTypes.Subject,
+            JwtClaimTypes.PreferredUserName
+        }
+    }
+}
+```
+
 
 When you start up both the Identity Server Instance and the ServiceStack Instance, you should be redirected to the IdentityServer Instance when you try to access the service you secured with the Authenticate attribute.
 
