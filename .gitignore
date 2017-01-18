@@ -236,3 +236,5 @@ _Pvt_Extensions
 
 # VIM
 .swp
+/tools
+/cake.config
