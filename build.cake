@@ -69,7 +69,7 @@ Task("Pack")
 
 	if (AppVeyor.IsRunningOnAppVeyor)
 	{
-		var artifacts = GetFiles(buildArtifacts.Path + "/*.nupkg")
+		var artifacts = GetFiles(buildArtifacts.Path + "/**.nupkg");
 		foreach(var artifact in artifacts)
 		{
 			AppVeyor.UploadArtifact(artifact);
