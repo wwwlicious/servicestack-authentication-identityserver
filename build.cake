@@ -58,7 +58,11 @@ Task("Restore")
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectories(new DirectoryPath[] { buildArtifacts });
+    CleanDirectories(new DirectoryPath[] 
+	{ 
+		Directory("./src/IdentityServer4.Contrib.ServiceStack/obj" ),
+		Directory("./src/IdentityServer4.Contrib.ServiceStack/bin" ) 
+	});
 });
 
 Task("Default")
