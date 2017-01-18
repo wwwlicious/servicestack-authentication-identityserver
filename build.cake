@@ -1,3 +1,5 @@
+#addin "Cake.Json"
+
 var target						  = Argument("target", "Default");
 var configuration				  = Argument<string>("configuration", "Release");
 
@@ -7,12 +9,12 @@ var configuration				  = Argument<string>("configuration", "Release");
 var isLocalBuild				  = !AppVeyor.IsRunningOnAppVeyor;
 var dotNetCorePackPath            = Directory("./src/IdentityServer4.Contrib.ServiceStack");
 var sourcePath					  = Directory("./src");
-var buildArtifacts				  = Directory("./artifacts/packages");
 
 var nugetSources                  = new [] { "https://api.nuget.org/v3/index.json" };
 
 Task("Build")
     .IsDependentOn("Clean")
+	.IsDependentOn("Version")
     .IsDependentOn("Restore")
     .Does(() =>
 {
@@ -28,23 +30,22 @@ Task("Build")
     }
 });
 
-Task("Pack")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Clean")
-    .Does(() =>
+Task("Version")
+	.Does(() => 
 {
-    var settings = new DotNetCorePackSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = buildArtifacts,
-    };
+	if (!isLocalBuild)
+	{
+		var projects = GetFiles("./**/project.json");
+		foreach(var project in projects)
+		{
+			var projectJson = ParseJsonFromFile(project);
 
-    // add build suffix for CI builds
-    if(!isLocalBuild)
-    {
-        settings.VersionSuffix = AppVeyor.Environment.Build.Number.ToString();
-    }
-    DotNetCorePack(dotNetCorePackPath, settings);
+			string version = (string)projectJson["version"];
+			projectJson["version"] = version.Substring(0, version.LastIndexOf('.')) +  "." + AppVeyor.Environment.Build.Number.ToString();
+
+			SerializeJsonToFile(project, projectJson);
+		}
+	}
 });
 
 Task("Restore")
@@ -61,7 +62,6 @@ Task("Clean")
 });
 
 Task("Default")
-  .IsDependentOn("Build")
-  .IsDependentOn("Pack");
+  .IsDependentOn("Build");
 
 RunTarget(target);
