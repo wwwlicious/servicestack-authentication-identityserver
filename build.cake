@@ -7,8 +7,9 @@ var configuration				  = Argument<string>("configuration", "Release");
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 var isLocalBuild				  = !AppVeyor.IsRunningOnAppVeyor;
-var dotNetCorePackPath            = Directory("./src/IdentityServer4.Contrib.ServiceStack");
+var packPath					  = Directory("./src/IdentityServer4.Contrib.ServiceStack");
 var sourcePath					  = Directory("./src");
+var buildArtifacts				  = Directory("./Artifacts");
 
 var nugetSources                  = new [] { "https://api.nuget.org/v3/index.json" };
 
@@ -33,7 +34,7 @@ Task("Build")
 Task("Version")
 	.Does(() => 
 {
-	if (!isLocalBuild)
+	if (AppVeyor.IsRunningOnAppVeyor)
 	{
 		var projects = GetFiles("./**/project.json");
 		foreach(var project in projects)
@@ -55,17 +56,35 @@ Task("Restore")
     DotNetCoreRestore(sourcePath, settings);
 });
 
+Task("Pack")
+	.IsDependentOn("Build")
+	.Does(() => 
+{
+	var settings = new DotNetCorePackSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = buildArtifacts,
+    };	
+	DotNetCorePack(packPath, settings);
+
+	if (AppVeyor.IsRunningOnAppVeyor)
+	{
+		var artifacts = GetFiles(buildArtifacts.Path + "/*.nupkg")
+		foreach(var artifact in artifacts)
+		{
+			AppVeyor.UploadArtifact(artifact);
+		}
+	}
+});
+
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectories(new DirectoryPath[] 
-	{ 
-		Directory("./src/IdentityServer4.Contrib.ServiceStack/obj" ),
-		Directory("./src/IdentityServer4.Contrib.ServiceStack/bin" ) 
-	});
+    CleanDirectories(new DirectoryPath[] { buildArtifacts });
 });
 
 Task("Default")
-  .IsDependentOn("Build");
+  .IsDependentOn("Build")
+  .IsDependentOn("Pack");
 
 RunTarget(target);
