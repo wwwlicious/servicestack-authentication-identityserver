@@ -16,7 +16,7 @@ namespace ServiceStack.Authentication.IdentityServer
     {
         private readonly ServiceClientBase defaultServiceClient;
         private readonly IAppSettings appSettings;
-        private IClientSecretStore clientSecretStore;
+        private Func<IClientSecretStore> clientSecretStore;
 
         private IdentityServerAuthProviderType providerType;
 
@@ -34,7 +34,7 @@ namespace ServiceStack.Authentication.IdentityServer
         {
             ValidateCallbackRequirements(appHost);
 
-            clientSecretStore = appHost.TryResolve<IClientSecretStore>() ?? new DefaultClientSecretStore(appSettings);
+            clientSecretStore = () => appHost.TryResolve<IClientSecretStore>() ?? new DefaultClientSecretStore(appSettings);
 
             var provider = ProviderFactory();
 
@@ -184,7 +184,7 @@ namespace ServiceStack.Authentication.IdentityServer
 
         public string ClientSecret
         {
-            get { return clientSecretStore.GetSecretAsync(ClientId).Result; }
+            get { return clientSecretStore().GetSecretAsync(ClientId).Result; }
             set { appSettings.Set(ConfigKeys.ClientSecret, value); }
         }
 
