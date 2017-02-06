@@ -1,0 +1,10 @@
+﻿@using ServiceStack
+@using UserAuthProvider.ServiceStack.Core.SelfHost.ServiceModel
+@{
+    ViewBag.Title = "ServiceStack Self Host with Razor";
+    Layout = "_Layout";
+}
+
+<h2>Hello World Service</h2>
+
+<p>Access some secure content <a href="@((new Hello { Name = "" }).ToGetUrl())">here!</a></p>

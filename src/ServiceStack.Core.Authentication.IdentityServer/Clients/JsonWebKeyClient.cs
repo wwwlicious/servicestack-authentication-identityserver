@@ -1,15 +1,11 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-namespace ServiceStack.Authentication.IdentityServer.Clients
+﻿namespace ServiceStack.Core.Authentication.IdentityServer.Clients
 {
     using System;
     using System.Collections.Generic;
-    using System.IdentityModel.Tokens;
     using System.Threading.Tasks;
     using Interfaces;
     using Logging;
-    using Microsoft.IdentityModel.Protocols;
+    using Microsoft.IdentityModel.Tokens;
 
     internal class JsonWebKeyClient : IJsonWebKeyClient
     {
@@ -21,8 +17,8 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
         {
             appSettings = settings;
         }
-        
-        public async Task<IList<SecurityToken>> GetAsync()
+
+        public async Task<IList<SecurityKey>> GetAsync()
         {
             var httpClient = new JsonServiceClient();
 
@@ -42,11 +38,9 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
                 return null;
             }
 
-
-
             var webKeySet = new JsonWebKeySet(document);
 
-            return webKeySet.GetSigningTokens();
+            return webKeySet.GetSigningKeys();
         }
     }
 }

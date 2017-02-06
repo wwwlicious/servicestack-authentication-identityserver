@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.1"
+    },
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Microsoft.AspNetCore.Hosting": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
+
+    "Microsoft.Extensions.Logging": "1.0.1",
+    "Microsoft.Extensions.Logging.Console": "1.0.1",
+    "Microsoft.Extensions.Logging.Debug": "1.0.1",
+
+    "ServiceStack.Core": "1.0.33",
+    "ServiceStack.Core.Authentication.IdentityServer": {
+      "target": "project"
+    },
+    "ServiceStack.Mvc.Core": "1.0.33"
+  },
+
+  "tools": {
+    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final"
+  },
+
+  "publishOptions": {
+    "include": [
+      "wwwroot",
+      "**/*.cshtml",
+      "appsettings.json",
+      "web.config"
+    ]
+  },
+
+  "frameworks": {
+    "netcoreapp1.1": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ]
+    }
+  },
+
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true
+  },
+
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true
+    }
+  }
+}

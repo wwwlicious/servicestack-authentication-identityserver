@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "IdentityModel": "2.5.1",
+    "Microsoft.IdentityModel.Protocols.OpenIdConnect": "2.1.2",
+    "NETStandard.Library": "1.6.0",
+    "ServiceStack.Core": "1.0.33",
+    "System.IdentityModel.Tokens.Jwt": "5.1.2"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {
+
+      }
+    }
+  }
+}

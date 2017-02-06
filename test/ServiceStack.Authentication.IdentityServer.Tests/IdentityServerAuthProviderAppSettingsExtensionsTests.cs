@@ -18,7 +18,9 @@ namespace ServiceStack.Authentication.IdentityServer.Tests
             var appSettings = new DictionarySettings();
 
             // Act
+#pragma warning disable 618
             appSettings.SetUserAuthProvider();
+#pragma warning restore 618
 
             // Assert
             appSettings.Get<IdentityServerAuthProviderType>("oauth.provider")
@@ -33,7 +35,9 @@ namespace ServiceStack.Authentication.IdentityServer.Tests
             var appSettings = new DictionarySettings();
 
             // Act
+#pragma warning disable 618
             appSettings.SetImpersonationAuthProvider();
+#pragma warning restore 618
 
             // Assert
             appSettings.Get<IdentityServerAuthProviderType>("oauth.provider")
@@ -48,7 +52,9 @@ namespace ServiceStack.Authentication.IdentityServer.Tests
             var appSettings = new DictionarySettings();
 
             // Act
+#pragma warning disable 618
             appSettings.SetServiceAuthProvider();
+#pragma warning restore 618
 
             // Assert
             appSettings.Get<IdentityServerAuthProviderType>("oauth.provider")

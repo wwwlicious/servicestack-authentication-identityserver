@@ -40,6 +40,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.Authentication
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.Authentication.IdentityServer", "src\ServiceStack.Authentication.IdentityServer\ServiceStack.Authentication.IdentityServer.csproj", "{AA8BA2C5-53F8-42F9-8A38-867F61B0F058}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ServiceStack.Core.Authentication.IdentityServer", "src\ServiceStack.Core.Authentication.IdentityServer\ServiceStack.Core.Authentication.IdentityServer.xproj", "{3457FCD7-7AD0-4936-97A5-70F8DCB24794}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UserAuthProvider.ServiceStack.Core.SelfHost", "samples\UserAuthProvider.ServiceStack.Core.SelfHost\UserAuthProvider.ServiceStack.Core.SelfHost.xproj", "{7E50F023-0B67-4CFF-B31A-4112E4E68D0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +98,14 @@ Global
 		{AA8BA2C5-53F8-42F9-8A38-867F61B0F058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA8BA2C5-53F8-42F9-8A38-867F61B0F058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA8BA2C5-53F8-42F9-8A38-867F61B0F058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3457FCD7-7AD0-4936-97A5-70F8DCB24794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3457FCD7-7AD0-4936-97A5-70F8DCB24794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3457FCD7-7AD0-4936-97A5-70F8DCB24794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3457FCD7-7AD0-4936-97A5-70F8DCB24794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E50F023-0B67-4CFF-B31A-4112E4E68D0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E50F023-0B67-4CFF-B31A-4112E4E68D0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E50F023-0B67-4CFF-B31A-4112E4E68D0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E50F023-0B67-4CFF-B31A-4112E4E68D0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,5 +123,7 @@ Global
 		{1254F3F4-2F0C-48E3-8034-CA85F6030EC7} = {E0581B00-91B9-44B8-953A-C78A9009AFFD}
 		{C8ECF7A1-D436-49F7-9F02-587FA9E11D15} = {E0581B00-91B9-44B8-953A-C78A9009AFFD}
 		{AA8BA2C5-53F8-42F9-8A38-867F61B0F058} = {454D0072-5514-4AFC-A21A-769CB69809F7}
+		{3457FCD7-7AD0-4936-97A5-70F8DCB24794} = {454D0072-5514-4AFC-A21A-769CB69809F7}
+		{7E50F023-0B67-4CFF-B31A-4112E4E68D0C} = {05FEA8B8-73C7-4945-98EF-7CA53BB3B3E0}
 	EndGlobalSection
 EndGlobal
