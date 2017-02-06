@@ -7,7 +7,9 @@
     "tags": [ "ServiceStack", "IdentityServer", "Authentication" ],
     "projectUrl": "https://github.com/MacLeanElectrical/servicestack-authentication-identityserver",
     "licenseUrl": "https://www.mozilla.org/en-US/MPL/2.0/",
-    "iconUrl": "https: //servicestack.net/img/logo-32.png"
+    "iconUrl": "https://servicestack.net/img/logo-32.png",
+    "releaseNotes": "dotnet core release",
+    "requireLicenseAcceptance": false
   },
 
   "dependencies": {
