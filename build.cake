@@ -57,7 +57,7 @@ Task("Restore")
     .Does(() =>
 {
     var settings = new DotNetCoreRestoreSettings { Sources = nugetSources };
-    DotNetCoreRestore(sourcePath, settings);
+    DotNetCoreRestore(Directory("."), settings);
 });
 
 Task("Pack")
