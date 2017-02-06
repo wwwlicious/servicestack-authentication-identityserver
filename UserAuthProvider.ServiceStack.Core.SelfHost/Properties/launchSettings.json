@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "UserAuthProvider.ServiceStack.Core.SelfHost": {
-      "commandName": "Project"
-    },
-    "SQLEXPRESS": {}
-  }
-}

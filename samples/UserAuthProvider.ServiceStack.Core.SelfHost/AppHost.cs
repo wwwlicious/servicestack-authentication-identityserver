@@ -2,8 +2,8 @@
 {
     using Funq;
     using global::ServiceStack;
-    using global::ServiceStack.Core.Authentication.IdentityServer;
-    using global::ServiceStack.Core.Authentication.IdentityServer.Enums;
+    using global::ServiceStack.Authentication.IdentityServer;
+    using global::ServiceStack.Authentication.IdentityServer.Enums;
     using global::ServiceStack.Mvc;
 
     public class AppHost : AppHostBase

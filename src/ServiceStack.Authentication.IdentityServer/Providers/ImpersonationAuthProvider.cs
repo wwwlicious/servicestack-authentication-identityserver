@@ -1,7 +1,4 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-namespace ServiceStack.Authentication.IdentityServer.Providers
+﻿namespace ServiceStack.Authentication.IdentityServer.Providers
 {
     using System;
     using System.Collections.Generic;
@@ -33,7 +30,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var httpRequest = authService.Request;
 
             var accessToken = ActAsUserGrantTokenClient.RequestCode(
-                                    GetAccessToken(httpRequest, request), 
+                                    GetAccessToken(httpRequest, request),
                                     GetReferrer(httpRequest, request)).Result;
 
             tokens.AccessToken = accessToken;

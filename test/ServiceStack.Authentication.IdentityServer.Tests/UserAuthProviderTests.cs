@@ -1,14 +1,8 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-namespace ServiceStack.Authentication.IdentityServer.Tests
+﻿namespace ServiceStack.Authentication.IdentityServer.Tests
 {
-    using System.Threading.Tasks;
     using Auth;
-    using Enums;
     using FakeItEasy;
     using FluentAssertions;
-    using Interfaces;
     using Providers;
     using Web;
     using Xunit;
@@ -31,7 +25,7 @@ namespace ServiceStack.Authentication.IdentityServer.Tests
             {
                 CallbackUrl = "http://localhost:5000/Auth/IdentityServer"
             };
-            
+
             // Act
             var result = provider.IsInitialAuthenticateRequest(httpRequestFake, authTokensFake).Result;
 
@@ -55,7 +49,7 @@ namespace ServiceStack.Authentication.IdentityServer.Tests
             var authTokensFake = A.Fake<IAuthTokens>();
             A.CallTo(() => authTokensFake.AccessToken).Returns(accessToken);
 
-            var provider = new UserAuthProvider(new TestIdentityServerAuthProviderSettings()) {CallbackUrl = url};
+            var provider = new UserAuthProvider(new TestIdentityServerAuthProviderSettings()) { CallbackUrl = url };
 
             // Act
             var result = provider.IsInitialAuthenticateRequest(httpRequestFake, authTokensFake).Result;

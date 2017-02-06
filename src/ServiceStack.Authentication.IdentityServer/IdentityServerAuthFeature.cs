@@ -1,7 +1,4 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-namespace ServiceStack.Authentication.IdentityServer
+﻿namespace ServiceStack.Authentication.IdentityServer
 {
     using System;
     using System.Collections.Generic;
@@ -40,11 +37,11 @@ namespace ServiceStack.Authentication.IdentityServer
 
             appHost.LoadPlugin(
                 new AuthFeature(() => new AuthUserSession(),
-                new IAuthProvider[]
-                {
-                    provider
-                },
-                $"{appHost.Config?.WebHostUrl}auth/{IdentityServerAuthProvider.Name}")                                               
+                    new IAuthProvider[]
+                    {
+                        provider
+                    },
+                    GetProviderLoginUrl(appHost))
             );
 
             if (defaultServiceClient == null) return;
@@ -53,20 +50,33 @@ namespace ServiceStack.Authentication.IdentityServer
             appHost.GlobalRequestFilters.Add(ImpersonateServiceClient);
         }
 
+        private static string GetProviderLoginUrl(IAppHost appHost)
+        {
+            if (string.IsNullOrWhiteSpace(appHost.Config?.WebHostUrl))
+            {
+                throw new Exception(
+                    "appHost.Config.WebHostUrl must be set to use the Identity Server User Login plugin so that " +
+                    "the service can sent it's full http://url:port to the Identity Server User Login");
+            }
+
+            var returnValue = appHost.Config.WebHostUrl.AppendUrlPaths("auth", IdentityServerAuthProvider.Name);
+            return returnValue;
+        }
+
         private void ValidateCallbackRequirements(IAppHost appHost)
         {
             if (providerType != IdentityServerAuthProviderType.UserAuthProvider) return;
 
             if (appHost.Config?.WebHostUrl == null)
             {
-                throw new ApplicationException(
+                throw new Exception(
                     "appHost.Config.WebHostUrl must be set to use the Identity Server User Login plugin so that " +
                     "the service can sent it's full http://url:port to the Identity Server User Login");
             }
 
             referrerUrl = appHost.Config?.WebHostUrl;
-            
-            appHost.AppSettings.Set($"oauth.{IdentityServerAuthProvider.Name}.CallbackUrl", $"{referrerUrl}auth/{IdentityServerAuthProvider.Name}");
+
+            appHost.AppSettings.Set($"oauth.{IdentityServerAuthProvider.Name}.CallbackUrl", referrerUrl.AppendUrlPaths("auth", IdentityServerAuthProvider.Name));
         }
 
         private IIdentityServerProvider ProviderFactory()
@@ -101,7 +111,11 @@ namespace ServiceStack.Authentication.IdentityServer
                 return;
             }
 
+#if NETSTANDARD1_6
+            var authTokens = session.GetAuthTokens(IdentityServerAuthProvider.Name);
+#elif NET45
             var authTokens = session.GetOAuthTokens(IdentityServerAuthProvider.Name);
+#endif            
             if (string.IsNullOrEmpty(authTokens?.AccessToken))
             {
                 return;
@@ -112,7 +126,7 @@ namespace ServiceStack.Authentication.IdentityServer
                 provider = IdentityServerAuthProvider.Name,
 
                 oauth_token = authTokens.AccessToken,
-                oauth_verifier =  referrerUrl.AppendUrlPaths("auth", IdentityServerAuthProvider.Name)
+                oauth_verifier = $"{referrerUrl}auth/{IdentityServerAuthProvider.Name}"
             });
         }
 
@@ -171,7 +185,7 @@ namespace ServiceStack.Authentication.IdentityServer
 
         public string CallbackUrl
         {
-            get { return appSettings.Get(ConfigKeys.CallbackUrl, referrerUrl.AppendUrlPaths("auth", IdentityServerAuthProvider.Name)); }
+            get { return appSettings.Get(ConfigKeys.CallbackUrl, referrerUrl.AppendUrlPaths("auth", "IdentityServer")); }
             set { appSettings.Set(ConfigKeys.CallbackUrl, value); }
         }
 

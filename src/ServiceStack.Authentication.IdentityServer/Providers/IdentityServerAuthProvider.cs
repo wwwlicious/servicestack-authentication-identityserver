@@ -1,7 +1,4 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-namespace ServiceStack.Authentication.IdentityServer.Providers
+﻿namespace ServiceStack.Authentication.IdentityServer.Providers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -9,8 +6,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     using Auth;
     using Clients;
     using Enums;
-    using IdentityModel;
     using Interfaces;
+    using IdentityModel;
 
     public abstract class IdentityServerAuthProvider : OAuthProvider, IIdentityServerProvider
     {
@@ -34,7 +31,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             if (IntrospectionClient == null) IntrospectionClient = new IntrospectClient(AuthProviderSettings);
 
             if (RefreshTokenClient == null) RefreshTokenClient = new RefreshTokenClient(AuthProviderSettings);
-            
+
             if (UserInfoClient == null) UserInfoClient = new UserInfoClient(AuthProviderSettings);
         }
 
@@ -60,7 +57,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             }
 
             var claims = UserInfoClient.GetClaims(tokens.AccessToken).Result;
-            
+
             if (claims == null) return;
 
             var identityTokens = tokens as IdentityServerAuthTokens;

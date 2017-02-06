@@ -54,6 +54,9 @@
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ServiceStack.Authentication.IdentityServer">
+      <HintPath>..\..\src\ServiceStack.Authentication.IdentityServer\bin\Debug\net45\ServiceStack.Authentication.IdentityServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

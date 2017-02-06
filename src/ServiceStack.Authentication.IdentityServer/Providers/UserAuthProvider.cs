@@ -1,11 +1,7 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-namespace ServiceStack.Authentication.IdentityServer.Providers
+﻿namespace ServiceStack.Authentication.IdentityServer.Providers
 {
     using System;
     using System.Collections.Generic;
-    using System.IdentityModel.Tokens;
     using System.Linq;
     using System.Threading.Tasks;
     using Auth;
@@ -70,7 +66,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var httpRequest = authService.Request;
 
             var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens).ConfigureAwait(false);
-            
+
             // We need to get the user to login as we don't have any credentials for them
             if (isInitialRequest && !IsCallbackRequest(authService, request))
             {
@@ -86,7 +82,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 {
                     throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
                 }
-                
+
                 // Assign the Id token
                 var idTokens = tokens as IdentityServerAuthTokens;
                 if (idTokens != null)
@@ -94,7 +90,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                     idTokens.IdToken = authTokens.IdToken;
                     idTokens.Code = authTokens.Code;
                 }
-                    
+
                 var accessTokens = await AuthCodeClient.RequestCode(authTokens.Code, CallbackUrl)
                                                        .ConfigureAwait(false);
                 if (accessTokens != null)
@@ -159,14 +155,14 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <param name="httpRequest">Http Request</param>
         /// <param name="authTokens">Auth Tokens</param>
         /// <returns></returns>
-        internal async Task<bool> IsInitialAuthenticateRequest(IRequest httpRequest, IAuthTokens authTokens)
+        public async Task<bool> IsInitialAuthenticateRequest(IRequest httpRequest, IAuthTokens authTokens)
         {
             if (string.IsNullOrEmpty(httpRequest.AbsoluteUri))
             {
                 return false;
             }
 
-            if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, 0, StringComparison.InvariantCultureIgnoreCase) < 0)
+            if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, 0, StringComparison.OrdinalIgnoreCase) < 0)
             {
                 return false;
             }
@@ -188,13 +184,24 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
-            if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, StringComparison.OrdinalIgnoreCase) != 0)
             {
                 return false;
             }
 
+#if NETSTANDARD1_6
+
+            if (httpRequest.UrlReferrer == null) return false;
+
+            var referrer = new Uri(httpRequest.UrlReferrer.GetLeftAuthority());
+            var authRealm = new Uri(AuthRealm);
+
+            return referrer.AbsoluteUri.IndexOf(authRealm.AbsoluteUri, StringComparison.OrdinalIgnoreCase) == 0;
+
+#elif NET45
             return httpRequest.UrlReferrer != null && 
                    httpRequest.UrlReferrer.AbsoluteUri.IndexOf(AuthRealm, StringComparison.InvariantCultureIgnoreCase) == 0;
+#endif
         }
 
         /// <summary>Authenticates the Client by Redirecting them to the Authorize Url Endpoint of Identity Server</summary>
@@ -206,10 +213,13 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         {
             var nonce = Guid.NewGuid().ToString("N");
 
-            string preAuthUrl = $"{AuthorizeUrl}?client_id={AuthProviderSettings.ClientId}&scope={AuthProviderSettings.Scopes}" +
-                                $"&redirect_uri={CallbackUrl.UrlEncode()}&response_type=code id_token" +
-                                $"&state={Guid.NewGuid().ToString("N")}&nonce={nonce}" +
-                                "&response_mode=form_post";
+            string preAuthUrl = AuthorizeUrl.AddQueryParam("client_id", AuthProviderSettings.ClientId)
+                                            .AddQueryParam("scope", AuthProviderSettings.Scopes)
+                                            .AddQueryParam("redirect_uri", CallbackUrl)
+                                            .AddQueryParam("response_type", "code id_token")
+                                            .AddQueryParam("state", Guid.NewGuid().ToString("N"))
+                                            .AddQueryParam("nonce", nonce)
+                                            .AddQueryParam("response_mode", "form_post");
 
             var idAuthTokens = authTokens as IdentityServerAuthTokens;
             if (idAuthTokens != null)
@@ -229,25 +239,25 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         internal AuthenticateResult ParseAuthenticateTokens(IRequest request)
         {
             var result = new AuthenticateResult();
-            
+
             var requestFragments = request.GetFragments().ToList();
 
             // Check for errors first.
             var errorFragment = requestFragments.FirstOrDefault(x => x.Item1 == "error");
             var error = errorFragment != null ? errorFragment.Item2 : request.FormData["error"];
 
-            if (!string.IsNullOrEmpty(error) )
+            if (!string.IsNullOrEmpty(error))
             {
                 Log.Error("Error response from Identity Server");
                 return result;
             }
-            
+
             var idTokenFragment = requestFragments.FirstOrDefault(x => x.Item1 == "id_token");
             result.IdToken = idTokenFragment != null ? idTokenFragment.Item2 : request.FormData["id_token"];
 
             var codeFragment = requestFragments.FirstOrDefault(x => x.Item1 == "code");
             result.Code = codeFragment != null ? codeFragment.Item2 : request.FormData["code"];
-            
+
             return result;
         }
 
@@ -290,7 +300,12 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var idAuthTokens = tokens as IdentityServerAuthTokens;
             if (!string.IsNullOrWhiteSpace(idAuthTokens?.IdToken))
             {
-                var jwtToken = new JwtSecurityToken(idAuthTokens.IdToken);
+#if NETSTANDARD1_6
+
+                var jwtToken = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(idAuthTokens.IdToken);
+#elif NET45
+                var jwtToken = new System.IdentityModel.Tokens.JwtSecurityToken(idAuthTokens.IdToken);
+#endif
                 idAuthTokens.Issuer = jwtToken.Issuer;
                 idAuthTokens.Subject = jwtToken.Subject;
 

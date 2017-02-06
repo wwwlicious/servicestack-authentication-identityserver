@@ -9,7 +9,7 @@
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "ServiceStack.Mvc.Core": "1.0.33",
-    "ServiceStack.Core.Authentication.IdentityServer": {
+    "ServiceStack.Authentication.IdentityServer": {
       "target": "project"
     },
     "Serilog.Sinks.Seq": "3.2.0",

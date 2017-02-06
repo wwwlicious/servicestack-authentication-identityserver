@@ -7,7 +7,11 @@ var configuration				  = Argument<string>("configuration", "Release");
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 var isLocalBuild				  = !AppVeyor.IsRunningOnAppVeyor;
-var packPath					  = Directory("./src/IdentityServer4.Contrib.ServiceStack");
+var packPaths					  = new [] 
+									{
+										"./src/IdentityServer4.Contrib.ServiceStack",
+										"./src/ServiceStack.Authentication.IdentityServer"
+ 									};
 var sourcePath					  = Directory("./src");
 var buildArtifacts				  = Directory("./Artifacts");
 
@@ -66,7 +70,10 @@ Task("Pack")
         OutputDirectory = buildArtifacts,
     };
 
-	DotNetCorePack(packPath, settings);
+	foreach(var packPath in packPaths)
+	{
+		DotNetCorePack(Directory(packPath), settings);
+	}
 
 	if (AppVeyor.IsRunningOnAppVeyor)
 	{
