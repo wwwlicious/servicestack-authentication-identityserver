@@ -9,6 +9,12 @@ namespace ServiceStack.Authentication.IdentityServer.Extensions
 
     public static class RequestExtensions
     {
+        public static string TidyUrl(this string url)
+        {
+            url = url.Trim();
+            return !url.EndsWith("/") ? $"{url}/" : url;
+        }
+
         public static IEnumerable<Tuple<string, string>> GetFragments(this IRequest request)
         {
             return GetFragments(request.AbsoluteUri);

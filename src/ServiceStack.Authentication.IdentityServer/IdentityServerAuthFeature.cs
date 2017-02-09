@@ -8,6 +8,8 @@ namespace ServiceStack.Authentication.IdentityServer
     using Auth;
     using Configuration;
     using Enums;
+    using Exceptions;
+    using Extensions;
     using Interfaces;
     using Providers;
     using Web;
@@ -56,8 +58,8 @@ namespace ServiceStack.Authentication.IdentityServer
         private static string GetProviderLoginUrl(IAppHost appHost)
         {
             if (string.IsNullOrWhiteSpace(appHost.Config?.WebHostUrl))
-            {
-                throw new Exception(
+            {                
+                throw new ConfigurationException(
                     "appHost.Config.WebHostUrl must be set to use the Identity Server User Login plugin so that " +
                     "the service can sent it's full http://url:port to the Identity Server User Login");
             }
@@ -72,12 +74,12 @@ namespace ServiceStack.Authentication.IdentityServer
 
             if (appHost.Config?.WebHostUrl == null)
             {
-                throw new Exception(
+                throw new ConfigurationException(
                     "appHost.Config.WebHostUrl must be set to use the Identity Server User Login plugin so that " +
                     "the service can sent it's full http://url:port to the Identity Server User Login");
             }
 
-            referrerUrl = appHost.Config?.WebHostUrl;
+            referrerUrl = appHost.Config?.WebHostUrl.TidyUrl();
 
             appHost.AppSettings.Set($"oauth.{IdentityServerAuthProvider.Name}.CallbackUrl", referrerUrl.AppendUrlPaths("auth", IdentityServerAuthProvider.Name));
         }
@@ -142,7 +144,7 @@ namespace ServiceStack.Authentication.IdentityServer
 
         public string AuthRealm
         {
-            get { return appSettings.Get(ConfigKeys.AuthRealm, "http://127.0.0.1:8080/"); }
+            get { return appSettings.Get(ConfigKeys.AuthRealm, "http://127.0.0.1:8080/").TidyUrl(); }
             set { appSettings.Set(ConfigKeys.AuthRealm, value); }
         }
 

@@ -4,7 +4,6 @@
 namespace ServiceStack.Authentication.IdentityServer
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -48,7 +47,7 @@ namespace ServiceStack.Authentication.IdentityServer
                 JsonWebKeyClient = new JsonWebKeyClient(appSettings);
             }
 
-            var keys = await JsonWebKeyClient.GetAsync();
+            var keys = await JsonWebKeyClient.GetAsync().ConfigureAwait(false);
 
             if (keys == null || keys.Count == 0)
             {
@@ -61,10 +60,10 @@ namespace ServiceStack.Authentication.IdentityServer
 
             tokenValidationParameters.ValidAudience = appSettings.ClientId;
 
-            var realms = new List<string>();
+            var realms = new string[2];
             var realm = appSettings.AuthRealm;
-            realms.Add(realm.EndsWith("/") ? realm.TrimEnd('/') : $"{realm}/");
-            realms.Add(realm);
+            realms[0] = realm.EndsWith("/") ? realm.TrimEnd('/') : $"{realm}/";
+            realms[1] = realm;
 
             tokenValidationParameters.ValidIssuers = realms;
         }
@@ -160,10 +159,10 @@ namespace ServiceStack.Authentication.IdentityServer
 
             tokenValidationParameters.ValidAudience = appSettings.ClientId;
 
-            var realms = new List<string>();
+            var realms = new string[2];
             var realm = appSettings.AuthRealm;
-            realms.Add(realm.EndsWith("/") ? realm.TrimEnd('/') : $"{realm}/");
-            realms.Add(realm);
+            realms[0] = realm.EndsWith("/") ? realm.TrimEnd('/') : $"{realm}/";
+            realms[1] = realm;
 
             tokenValidationParameters.ValidIssuers = realms;
         }

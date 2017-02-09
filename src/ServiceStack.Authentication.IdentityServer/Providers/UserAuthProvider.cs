@@ -214,15 +214,18 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <returns>Http Redirect Result</returns>
         internal IHttpResult AuthenticateClient(IServiceBase authService, IAuthSession session, IAuthTokens authTokens)
         {
+            const string preAuthUrl = "{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type=code id_token&state={4}&nonce={5}&response_mode=form_post";
+
             var nonce = Guid.NewGuid().ToString("N");
 
-            string preAuthUrl = AuthorizeUrl.AddQueryParam("client_id", AuthProviderSettings.ClientId)
-                                            .AddQueryParam("scope", AuthProviderSettings.Scopes)
-                                            .AddQueryParam("redirect_uri", CallbackUrl)
-                                            .AddQueryParam("response_type", "code id_token")
-                                            .AddQueryParam("state", Guid.NewGuid().ToString("N"))
-                                            .AddQueryParam("nonce", nonce)
-                                            .AddQueryParam("response_mode", "form_post");
+            var requestUrl = string.Format(
+                preAuthUrl, 
+                AuthorizeUrl, 
+                AuthProviderSettings.ClientId, 
+                AuthProviderSettings.Scopes,
+                CallbackUrl,
+                Guid.NewGuid().ToString("N"),
+                nonce);
 
             var idAuthTokens = authTokens as IdentityServerAuthTokens;
             if (idAuthTokens != null)
@@ -231,7 +234,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             }
 
             authService.SaveSession(session, SessionExpiry);
-            return authService.Redirect(PreAuthUrlFilter(this, preAuthUrl));
+            return authService.Redirect(PreAuthUrlFilter(this, requestUrl));
         }
 
         /// <summary>
