@@ -27,6 +27,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
 
         public override object Authenticate(IServiceBase authService, IAuthSession session, Authenticate request)
         {
+            RefreshSettings();          
             var tokens = Init(authService, ref session, request);
 
             var reponseToken = TokenCredentialsClient.RequestToken().Result;
