@@ -226,6 +226,18 @@ namespace ServiceStack.Authentication.IdentityServer
             set { appSettings.Set(ConfigKeys.ClientSecret, value); }
         }
 
+        public string Username
+        {
+          get { return appSettings.Get(ConfigKeys.Username, string.Empty); }
+          set { appSettings.Set(ConfigKeys.Username, value); }
+        }
+
+        public string Password
+        {
+          get { return appSettings.Get(ConfigKeys.Password, string.Empty); }
+          set { appSettings.Set(ConfigKeys.Password, value); }
+        }
+
         public string JwksUrl
         {
             get

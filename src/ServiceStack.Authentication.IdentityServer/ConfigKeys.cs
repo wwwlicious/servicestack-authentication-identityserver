@@ -30,5 +30,9 @@ namespace ServiceStack.Authentication.IdentityServer
         public const string CallbackUrl = "oauth.IdentityServer.CallbackUrl";
 
         public const string JwksUrl = "oauth.IdentityServer.JwksUrl";
+
+        public const string Username = "oauth.IdentityServer.Username";
+
+        public const string Password = "oauth.IdentityServer.Password";
     }
 }

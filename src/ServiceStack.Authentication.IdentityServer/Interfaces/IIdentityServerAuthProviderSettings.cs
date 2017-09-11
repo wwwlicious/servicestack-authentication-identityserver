@@ -30,6 +30,10 @@ namespace ServiceStack.Authentication.IdentityServer.Interfaces
 
         string Scopes { get; }
 
+        string Username { get; }
+
+        string Password { get; }
+
         IList<string> RoleClaimNames { get; }
 
         IList<string> PermissionClaimNames { get; }
