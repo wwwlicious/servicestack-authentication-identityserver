@@ -70,7 +70,13 @@ namespace ServiceStack.Authentication.IdentityServer
 
         private void ValidateCallbackRequirements(IAppHost appHost)
         {
-            if (providerType != IdentityServerAuthProviderType.UserAuthProvider) return;
+            var providersThatShouldValidateCallbackUrl = new List<IdentityServerAuthProviderType>
+            {
+              IdentityServerAuthProviderType.UserAuthProvider, 
+              IdentityServerAuthProviderType.ResourcePasswordFlowProvider
+            };
+
+            if (!providersThatShouldValidateCallbackUrl.Contains(providerType)) return;
 
             if (appHost.Config?.WebHostUrl == null)
             {
@@ -95,6 +101,9 @@ namespace ServiceStack.Authentication.IdentityServer
                     break;
                 case IdentityServerAuthProviderType.ServiceProvider:
                     provider = new ServiceAuthProvider(this);
+                    break;
+              case IdentityServerAuthProviderType.ResourcePasswordFlowProvider:
+                    provider = new ResourcePasswordFlowAuthProvider(this);
                     break;
                 default:
                     provider = new ImpersonationAuthProvider(this);

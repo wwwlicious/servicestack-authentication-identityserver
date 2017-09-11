@@ -19,6 +19,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         public const string DocumentDiscoveryEndpoint = ".well-known/openid-configuration";
         public const string JwksEndpoint = ".well-known/";
 
+        public bool IsResourcePassworFlowProvider => this is ResourcePasswordFlowAuthProvider;
+
         protected IdentityServerAuthProvider(IIdentityServerAuthProviderSettings appSettings)
         {
             this.Provider = Name;
@@ -59,6 +61,12 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return;
             }
 
+            if (IsResourcePassworFlowProvider)
+            {    
+              return;
+            }
+
+            
             var claims = UserInfoClient.GetClaims(tokens.AccessToken).Result;
 
             if (claims == null) return;
@@ -168,6 +176,11 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <returns>True if we have a valid access token</returns>
         protected virtual async Task<bool> IsValidAccessToken(IAuthTokens authTokens)
         {
+            if (IsResourcePassworFlowProvider)
+            {
+                return true;
+            }
+
             if (!string.IsNullOrEmpty(authTokens.AccessToken))
             {
                 // Check if it is a valid token

@@ -19,6 +19,14 @@ namespace ServiceStack.Authentication.IdentityServer.Enums
         /// Impersonation Provider - requires that the requesting service provides an access token which is used to
         /// authenticate the user / service
         /// </summary>
-        ImpersonationProvider = 2
+        ImpersonationProvider = 2,
+
+        /// <summary>
+        /// Resource Password Flow Provider - requires that the service using a Client ID, Secret, 
+        /// Username and Password to authenticate.
+        /// <see cref="https://tools.ietf.org/html/rfc6749#section-1.3.3"/>
+        /// <see cref="https://stackoverflow.com/questions/22077487/difference-between-the-resource-owner-password-flow-and-the-client-credential"/>
+        /// </summary>
+        ResourcePasswordFlowProvider = 3,
     }
 }
