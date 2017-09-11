@@ -1,6 +1,9 @@
 ﻿// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using ServiceStack.Authentication.IdentityServer.Enums;
+
 namespace ServiceStack.Authentication.IdentityServer.Providers
 {
     using System;
@@ -81,7 +84,13 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             {
                 // If the tokens are not valid then redirect with an error
                 var authTokens = ParseAuthenticateTokens(httpRequest);
-                if (authTokens.IsEmpty || !IdTokenValidator.IsValidIdToken(tokens, authTokens.IdToken))
+                var invalidTokens = AuthProviderSettings.AuthorizationFlow ==
+                                    IdentityServerOpenIdAuthorizationFlowType.CodeFlow
+                  ? authTokens.Code.IsNullOrEmpty()
+                  : authTokens.IsEmpty || !IdTokenValidator.IsValidIdToken(tokens, authTokens.IdToken);
+
+              
+                if (invalidTokens)
                 {
                     throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
                 }
@@ -192,6 +201,10 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
+            if (!httpRequest.QueryString["code"].IsNullOrEmpty())
+            {
+                return true;
+            }
 #if NETSTANDARD1_6
 
             if (httpRequest.UrlReferrer == null) return false;
@@ -214,7 +227,12 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <returns>Http Redirect Result</returns>
         internal IHttpResult AuthenticateClient(IServiceBase authService, IAuthSession session, IAuthTokens authTokens)
         {
-            const string preAuthUrl = "{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type=code id_token&state={4}&nonce={5}&response_mode=form_post";
+            const string preAuthUrl = "{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type={6}&state={4}&nonce={5}&response_mode=form_post";
+
+            var responseType = AuthProviderSettings.AuthorizationFlow ==
+                             IdentityServerOpenIdAuthorizationFlowType.CodeFlow
+            ? "code"
+            : "code id_token";
 
             var nonce = Guid.NewGuid().ToString("N");
 
@@ -225,11 +243,12 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 AuthProviderSettings.Scopes,
                 CallbackUrl,
                 Guid.NewGuid().ToString("N"),
-                nonce);
+                nonce,
+                responseType);
 
             var idAuthTokens = authTokens as IdentityServerAuthTokens;
             if (idAuthTokens != null)
-            {
+            {                
                 idAuthTokens.Nonce = nonce;
             }
 
@@ -258,13 +277,18 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return result;
             }
 
-            var idTokenFragment = requestFragments.FirstOrDefault(x => x.Item1 == "id_token");
-            result.IdToken = idTokenFragment != null ? idTokenFragment.Item2 : request.FormData["id_token"];
+          result.IdToken = GetRequestValue("id_token", request);
+          result.Code = GetRequestValue("code", request);
+           
+          return result;
+        }
 
-            var codeFragment = requestFragments.FirstOrDefault(x => x.Item1 == "code");
-            result.Code = codeFragment != null ? codeFragment.Item2 : request.FormData["code"];
-
-            return result;
+        private string GetRequestValue(string key, IRequest request)
+        {
+          var requestFragments = request.GetFragments().ToList();
+          var fragment = requestFragments.FirstOrDefault(x => x.Item1 == key);
+          var result= fragment != null ? fragment.Item2 : request.FormData[key];
+          return result ?? request.QueryString[key];
         }
 
         /// <summary>Initialise the Auth Token</summary>

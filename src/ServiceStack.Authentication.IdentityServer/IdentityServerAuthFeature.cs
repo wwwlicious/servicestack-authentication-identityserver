@@ -30,6 +30,7 @@ namespace ServiceStack.Authentication.IdentityServer
             this.defaultServiceClient = defaultServiceClient;
 
             this.providerType = IdentityServerAuthProviderType.UserAuthProvider;
+            this.AuthorizationFlow = IdentityServerOpenIdAuthorizationFlowType.Hybrid;
         }
 
         public virtual void Register(IAppHost appHost)
@@ -150,6 +151,8 @@ namespace ServiceStack.Authentication.IdentityServer
         {
             set { providerType = value; }
         }
+
+        public IdentityServerOpenIdAuthorizationFlowType AuthorizationFlow { get; set; }
 
         public string AuthRealm
         {
