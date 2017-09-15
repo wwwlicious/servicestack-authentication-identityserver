@@ -1,6 +1,9 @@
 ﻿// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using ServiceStack.Configuration;
+
 namespace ServiceStack.Authentication.IdentityServer.Providers
 {
     using System.Collections.Generic;
@@ -9,9 +12,9 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
     using Clients;
     using Interfaces;
 
-    public class ServiceAuthProvider : IdentityServerAuthProvider
+    public class ResourcePasswordFlowAuthProvider : IdentityServerAuthProvider
     {
-        public ServiceAuthProvider(IIdentityServerAuthProviderSettings appSettings)
+        public ResourcePasswordFlowAuthProvider(IIdentityServerAuthProviderSettings appSettings)
             : base(appSettings)
         {
         }
@@ -20,8 +23,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         {
             await base.Init().ConfigureAwait(false);
             if (TokenCredentialsClient == null)
-                TokenCredentialsClient = new TokenCredentialsClient(AuthProviderSettings);
-        }
+                TokenCredentialsClient = new ResourcePasswordTokenClient(AuthProviderSettings);                     
+        }      
 
         public ITokenCredentialsClient TokenCredentialsClient { get; set; }
 
@@ -35,8 +38,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             if (!string.IsNullOrWhiteSpace(reponseToken.AccessToken))
             {
                 tokens.AccessToken = reponseToken.AccessToken;
-
-                session.IsAuthenticated = this.IsValidAccessToken(tokens).Result;
+                session.IsAuthenticated = true;
             }
 
             return OnAuthenticated(authService, session, tokens, new Dictionary<string, string>());
@@ -53,5 +55,5 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         public override void LoadUserOAuthProvider(IAuthSession authSession, IAuthTokens tokens)
         {
         }
-    }
+  }
 }

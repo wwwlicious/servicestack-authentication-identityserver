@@ -30,6 +30,7 @@ namespace ServiceStack.Authentication.IdentityServer
             this.defaultServiceClient = defaultServiceClient;
 
             this.providerType = IdentityServerAuthProviderType.UserAuthProvider;
+            this.AuthorizationFlow = IdentityServerOpenIdAuthorizationFlowType.Hybrid;
         }
 
         public virtual void Register(IAppHost appHost)
@@ -70,7 +71,13 @@ namespace ServiceStack.Authentication.IdentityServer
 
         private void ValidateCallbackRequirements(IAppHost appHost)
         {
-            if (providerType != IdentityServerAuthProviderType.UserAuthProvider) return;
+            var providersThatShouldValidateCallbackUrl = new List<IdentityServerAuthProviderType>
+            {
+              IdentityServerAuthProviderType.UserAuthProvider, 
+              IdentityServerAuthProviderType.ResourcePasswordFlowProvider
+            };
+
+            if (!providersThatShouldValidateCallbackUrl.Contains(providerType)) return;
 
             if (appHost.Config?.WebHostUrl == null)
             {
@@ -95,6 +102,9 @@ namespace ServiceStack.Authentication.IdentityServer
                     break;
                 case IdentityServerAuthProviderType.ServiceProvider:
                     provider = new ServiceAuthProvider(this);
+                    break;
+              case IdentityServerAuthProviderType.ResourcePasswordFlowProvider:
+                    provider = new ResourcePasswordFlowAuthProvider(this);
                     break;
                 default:
                     provider = new ImpersonationAuthProvider(this);
@@ -142,6 +152,8 @@ namespace ServiceStack.Authentication.IdentityServer
             set { providerType = value; }
         }
 
+        public IdentityServerOpenIdAuthorizationFlowType AuthorizationFlow { get; set; }
+
         public string AuthRealm
         {
             get { return appSettings.Get(ConfigKeys.AuthRealm, "http://127.0.0.1:8080/").TidyUrl(); }
@@ -152,8 +164,13 @@ namespace ServiceStack.Authentication.IdentityServer
         {
             get
             {
-                if (DiscoveryResult != null) return DiscoveryResult.AuthorizeUrl;
-                return appSettings.Get(ConfigKeys.AuthorizeUrl, AuthRealm.AppendUrlPaths("connect", "authorize"));
+              var hasConfiguredValue = appSettings.Exists(ConfigKeys.AuthorizeUrl);
+              var discoveryValue = DiscoveryResult?.AuthorizeUrl;              
+              var settingsValue =  appSettings.Get(ConfigKeys.AuthorizeUrl, AuthRealm.AppendUrlPaths("connect", "authorize"));
+
+              return !hasConfiguredValue && discoveryValue != null
+                ? discoveryValue
+                : settingsValue;
             }
             set { appSettings.Set(ConfigKeys.AuthorizeUrl, value); }
         }
@@ -162,8 +179,13 @@ namespace ServiceStack.Authentication.IdentityServer
         {
             get
             {
-                if (DiscoveryResult != null) return DiscoveryResult.IntrospectUrl;
-                return appSettings.Get(ConfigKeys.IntrospectUrl, AuthRealm.AppendUrlPaths("connect", "introspect"));
+              var hasConfiguredValue = appSettings.Exists(ConfigKeys.IntrospectUrl);
+              var discoveryValue = DiscoveryResult?.IntrospectUrl;
+              var settingsValue =  appSettings.Get(ConfigKeys.IntrospectUrl, AuthRealm.AppendUrlPaths("connect", "introspect"));
+
+              return !hasConfiguredValue && discoveryValue != null
+                ? discoveryValue
+                : settingsValue;
             }
             set { appSettings.Set(ConfigKeys.IntrospectUrl, value); }
         }
@@ -172,8 +194,13 @@ namespace ServiceStack.Authentication.IdentityServer
         {
             get
             {
-                if (DiscoveryResult != null) return DiscoveryResult.UserInfoUrl;
-                return appSettings.Get(ConfigKeys.UserInfoUrl, AuthRealm.AppendUrlPaths("connect", "userinfo"));
+              var hasConfiguredValue = appSettings.Exists(ConfigKeys.UserInfoUrl);
+              var discoveryValue = DiscoveryResult?.UserInfoUrl;
+              var settingsValue = appSettings.Get(ConfigKeys.UserInfoUrl, AuthRealm.AppendUrlPaths("connect", "userinfo"));
+
+              return !hasConfiguredValue && discoveryValue != null
+                ? discoveryValue
+                : settingsValue;
             }
             set { appSettings.Set(ConfigKeys.UserInfoUrl, value); }
         }
@@ -182,8 +209,13 @@ namespace ServiceStack.Authentication.IdentityServer
         {
             get
             {
-                if (DiscoveryResult != null) return DiscoveryResult.TokenUrl;
-                return appSettings.Get(ConfigKeys.TokenUrl, AuthRealm.AppendUrlPaths("connect", "token"));
+              var hasConfiguredValue = appSettings.Exists(ConfigKeys.UserInfoUrl);
+              var discoveryValue = DiscoveryResult?.TokenUrl;
+              var settingsValue =  appSettings.Get(ConfigKeys.TokenUrl, AuthRealm.AppendUrlPaths("connect", "token"));
+
+              return !hasConfiguredValue && discoveryValue != null
+                ? discoveryValue
+                : settingsValue;
             }
             set { appSettings.Set(ConfigKeys.TokenUrl, value); }
         }
@@ -206,12 +238,29 @@ namespace ServiceStack.Authentication.IdentityServer
             set { appSettings.Set(ConfigKeys.ClientSecret, value); }
         }
 
+        public string Username
+        {
+          get { return appSettings.Get(ConfigKeys.Username, string.Empty); }
+          set { appSettings.Set(ConfigKeys.Username, value); }
+        }
+
+        public string Password
+        {
+          get { return appSettings.Get(ConfigKeys.Password, string.Empty); }
+          set { appSettings.Set(ConfigKeys.Password, value); }
+        }
+
         public string JwksUrl
         {
             get
             {
-                if (DiscoveryResult != null) return DiscoveryResult.JwksUrl;
-                return appSettings.Get(ConfigKeys.JwksUrl, AuthRealm.AppendUrlPaths(".well-known"));
+              var hasConfiguredValue = appSettings.Exists(ConfigKeys.JwksUrl);
+              var discoveryValue = DiscoveryResult?.JwksUrl;
+              var settingsValue =  appSettings.Get(ConfigKeys.JwksUrl, AuthRealm.AppendUrlPaths(".well-known"));
+
+              return !hasConfiguredValue && discoveryValue != null
+                ? discoveryValue
+                : settingsValue;
             }
             set { appSettings.Set(ConfigKeys.JwksUrl, value); }
         }
