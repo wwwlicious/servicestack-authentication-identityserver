@@ -38,17 +38,15 @@ Task("Version")
 {
 	if (AppVeyor.IsRunningOnAppVeyor)
 	{
-		// TransformConfig()
-		// var projects = GetFiles("./**/project.json");
-		// foreach(var project in projects)
-		// {
-		// 	var projectJson = ParseJsonFromFile(project);
+		foreach(var project in projects)
+		{
+			string version = XmlPeek(project, "/Project/PropertyGroup/VersionPrefix");
+			version = version.Substring(0, version.LastIndexOf('.')) + "." + AppVeyor.Environment.Build.Number.ToString();
 
-		// 	string version = (string)projectJson["version"];
-		// 	projectJson["version"] = version.Substring(0, version.LastIndexOf('.')) +  "." + AppVeyor.Environment.Build.Number.ToString();
-
-		// 	SerializeJsonToFile(project, projectJson);
-		// }
+			TransformConfig(project, project, new TransformationCollection {
+				{ "Project/PropertyGroup/VersionPrefix", version }
+			});
+		}
 	}
 });
 
@@ -68,7 +66,7 @@ Task("Pack")
         Configuration = configuration,
         OutputDirectory = buildArtifacts,
     };
-	
+
 	foreach(var project in projects)
 	{
 		DotNetCorePack(Directory(project), settings);
