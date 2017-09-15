@@ -1,4 +1,4 @@
-#addin "Cake.Json"
+#addin "MagicChunks"
 
 var target						  = Argument("target", "Default");
 var configuration				  = Argument<string>("configuration", "Release");
@@ -7,11 +7,11 @@ var configuration				  = Argument<string>("configuration", "Release");
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 var isLocalBuild				  = !AppVeyor.IsRunningOnAppVeyor;
-var packPaths					  = new [] 
-									{
-										"./src/IdentityServer4.Contrib.ServiceStack",
-										"./src/ServiceStack.Authentication.IdentityServer"
- 									};
+var projects					  = new []
+{
+	"./src/IdentityServer4.Contrib.ServiceStack/IdentityServer4.Contrib.ServiceStack.csproj",
+	"./src/ServiceStack.Authentication.IdentityServer/ServiceStack.Authentication.IdentityServer.csproj"
+};
 var sourcePath					  = Directory("./src");
 var buildArtifacts				  = Directory("./Artifacts");
 
@@ -23,15 +23,13 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-	var projects = GetFiles("./**/project.json");
-
 	foreach(var project in projects)
 	{
         var settings = new DotNetCoreBuildSettings 
         {
             Configuration = configuration
         };
-        DotNetCoreBuild(project.GetDirectory().FullPath, settings); 
+        DotNetCoreBuild(project, settings); 
     }
 });
 
@@ -40,16 +38,17 @@ Task("Version")
 {
 	if (AppVeyor.IsRunningOnAppVeyor)
 	{
-		var projects = GetFiles("./**/project.json");
-		foreach(var project in projects)
-		{
-			var projectJson = ParseJsonFromFile(project);
+		// TransformConfig()
+		// var projects = GetFiles("./**/project.json");
+		// foreach(var project in projects)
+		// {
+		// 	var projectJson = ParseJsonFromFile(project);
 
-			string version = (string)projectJson["version"];
-			projectJson["version"] = version.Substring(0, version.LastIndexOf('.')) +  "." + AppVeyor.Environment.Build.Number.ToString();
+		// 	string version = (string)projectJson["version"];
+		// 	projectJson["version"] = version.Substring(0, version.LastIndexOf('.')) +  "." + AppVeyor.Environment.Build.Number.ToString();
 
-			SerializeJsonToFile(project, projectJson);
-		}
+		// 	SerializeJsonToFile(project, projectJson);
+		// }
 	}
 });
 
@@ -69,13 +68,13 @@ Task("Pack")
         Configuration = configuration,
         OutputDirectory = buildArtifacts,
     };
-
-	foreach(var packPath in packPaths)
+	
+	foreach(var project in projects)
 	{
-		DotNetCorePack(Directory(packPath), settings);
+		DotNetCorePack(Directory(project), settings);
 	}
 
-	if (AppVeyor.IsRunningOnAppVeyor)
+	if (!isLocalBuild)
 	{
 		var artifacts = GetFiles(buildArtifacts.Path + "/*.nupkg");
 		foreach(var artifact in artifacts)
