@@ -38,6 +38,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             if (!string.IsNullOrWhiteSpace(reponseToken.AccessToken))
             {
                 tokens.AccessToken = reponseToken.AccessToken;
+                tokens.UserName = tokens.UserName ?? request.UserName;                
+                session.UserName = session.UserName ?? request.UserName;   
                 session.IsAuthenticated = true;
             }
 
