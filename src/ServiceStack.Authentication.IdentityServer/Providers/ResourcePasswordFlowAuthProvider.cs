@@ -44,16 +44,25 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             return OnAuthenticated(authService, session, tokens, new Dictionary<string, string>());
         }
 
-        /// <summary>Users the Access token to request the User Info and populates the Tokens</summary>
-        /// <param name="userSession">User Session</param>
-        /// <param name="tokens">Tokens</param>
-        /// <param name="authInfo">Authentication Info</param>
-        protected override void LoadUserAuthInfo(AuthUserSession userSession, IAuthTokens tokens, Dictionary<string, string> authInfo)
+      /// <summary>
+      /// Gets the Referral URL from the Request
+      /// </summary>
+      /// <param name="authService">Auth Service</param>
+      /// <param name="session">Auth Session</param>
+      /// <param name="request">Authenticate Request</param>
+      /// <returns></returns>
+      protected override string GetReferrerUrl(IServiceBase authService, IAuthSession session, Authenticate request = null)
+      {
+        string referralUrl = base.GetReferrerUrl(authService, session, request);
+
+        // Special case as the redirect url cannot be sent to identity server as it uses the redirect
+        // url to authenticate where the request came from.
+        if (!string.IsNullOrEmpty(authService.Request.QueryString["redirect"]))
         {
+          referralUrl = authService.Request.QueryString["redirect"];
         }
 
-        public override void LoadUserOAuthProvider(IAuthSession authSession, IAuthTokens tokens)
-        {
-        }
+        return referralUrl;
+      }
   }
 }
