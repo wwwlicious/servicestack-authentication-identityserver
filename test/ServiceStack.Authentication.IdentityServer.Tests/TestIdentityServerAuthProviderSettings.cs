@@ -4,12 +4,11 @@
 namespace ServiceStack.Authentication.IdentityServer.Tests
 {
     using System.Collections.Generic;
+    using Enums;
     using Interfaces;
 
     internal class TestIdentityServerAuthProviderSettings : IIdentityServerAuthProviderSettings
     {
-        public DocumentDiscoveryResult DiscoveryResult { get; set; }
-
         public string AuthRealm { get; set; }
 
         public string AuthorizeUrl { get; set; }
@@ -30,8 +29,16 @@ namespace ServiceStack.Authentication.IdentityServer.Tests
 
         public string Scopes { get; set; }
 
+        public string Username { get; set; }
+
+        public string Password { get; set; }
+
         public IList<string> RoleClaimNames { get; set; }
 
         public IList<string> PermissionClaimNames { get; set; }
+
+        public IdentityServerOpenIdAuthorizationFlowType AuthorizationFlow { get; set; }
+
+        public DocumentDiscoveryResult DiscoveryResult { get; set; }
     }
 }

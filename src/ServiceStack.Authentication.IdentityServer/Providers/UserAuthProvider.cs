@@ -76,7 +76,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             // We need to get the user to login as we don't have any credentials for them
             if (isInitialRequest && !IsCallbackRequest(authService, request))
             {
-                return AuthenticateClient(authService, session, tokens);
+                return AuthenticateClient(authService, session, tokens, request.State, request.nonce);
             }
 
             // We've just returned from Identity Server so we need to get the tokens we've been given
@@ -224,17 +224,26 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <param name="authService">Auth Service</param>
         /// <param name="session">Auth Session</param>
         /// <param name="authTokens">Auth Tokens</param>
+        /// <param name="state">State</param>
+        /// <param name="nonce">The nonce</param>
         /// <returns>Http Redirect Result</returns>
-        internal IHttpResult AuthenticateClient(IServiceBase authService, IAuthSession session, IAuthTokens authTokens)
+        internal IHttpResult AuthenticateClient(IServiceBase authService, IAuthSession session, IAuthTokens authTokens, string state, string nonce)
         {
-            const string preAuthUrl = "{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type={6}&state={4}&nonce={5}&response_mode=form_post";
+            const string preAuthUrl = "{0}?client_id={1}&scope={2}&redirect_uri={3}&response_type={4}&state={5}&nonce={6}&response_mode=form_post";
+            const string codeFlow = "code";
+            const string hybridFlow = "code id_token";
 
-            var responseType = AuthProviderSettings.AuthorizationFlow ==
-                             IdentityServerOpenIdAuthorizationFlowType.CodeFlow
-            ? "code"
-            : "code id_token";
+            var responseType = AuthProviderSettings.AuthorizationFlow == IdentityServerOpenIdAuthorizationFlowType.CodeFlow ? codeFlow : hybridFlow;
 
-            var nonce = Guid.NewGuid().ToString("N");
+            if (string.IsNullOrWhiteSpace(state))
+            {
+                state = Guid.NewGuid().ToString("N");
+            }
+
+            if (string.IsNullOrWhiteSpace(nonce))
+            {
+                nonce = Guid.NewGuid().ToString("N");
+            }
 
             var requestUrl = string.Format(
                 preAuthUrl, 
@@ -242,9 +251,10 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 AuthProviderSettings.ClientId, 
                 AuthProviderSettings.Scopes,
                 CallbackUrl,
-                Guid.NewGuid().ToString("N"),
-                nonce,
-                responseType);
+                responseType,
+                state,
+                nonce
+                );
 
             var idAuthTokens = authTokens as IdentityServerAuthTokens;
             if (idAuthTokens != null)
