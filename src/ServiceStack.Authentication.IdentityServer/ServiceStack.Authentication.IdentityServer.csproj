@@ -4,7 +4,7 @@
     <Description>A ServiceStack plugin for IdentityServer.</Description>
     <VersionPrefix>4.1.0</VersionPrefix>
     <Authors>Stuart Banks</Authors>
-    <TargetFrameworks>netstandard1.6;net45</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <AssemblyName>ServiceStack.Authentication.IdentityServer</AssemblyName>
     <PackageId>ServiceStack.Authentication.IdentityServer</PackageId>
     <PackageTags>ServiceStack;IdentityServer;Authentication</PackageTags>
