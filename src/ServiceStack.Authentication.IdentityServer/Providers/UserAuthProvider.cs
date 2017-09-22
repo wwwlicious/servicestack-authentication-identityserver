@@ -71,10 +71,10 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var tokens = Init(authService, ref session, request);
             var httpRequest = authService.Request;
 
-            var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens).ConfigureAwait(false);
+            var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens, authService, request).ConfigureAwait(false);
 
             // We need to get the user to login as we don't have any credentials for them
-            if (isInitialRequest && !IsCallbackRequest(authService, request))
+            if (isInitialRequest)
             {
                 return AuthenticateClient(authService, session, tokens, request.State, request.nonce);
             }
@@ -169,14 +169,14 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <param name="httpRequest">Http Request</param>
         /// <param name="authTokens">Auth Tokens</param>
         /// <returns></returns>
-        public async Task<bool> IsInitialAuthenticateRequest(IRequest httpRequest, IAuthTokens authTokens)
+        public async Task<bool> IsInitialAuthenticateRequest(IRequest httpRequest, IAuthTokens authTokens, IServiceBase authService, Authenticate request)
         {
             if (string.IsNullOrEmpty(httpRequest.AbsoluteUri))
             {
                 return false;
             }
 
-            if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, 0, StringComparison.OrdinalIgnoreCase) < 0)
+            if (IsCallbackRequest(authService, request))
             {
                 return false;
             }
@@ -198,15 +198,16 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
+            if (!httpRequest.QueryString["code"].IsNullOrEmpty())
+            {
+              return true;
+            }
+
             if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, StringComparison.OrdinalIgnoreCase) != 0)
             {
                 return false;
             }
 
-            if (!httpRequest.QueryString["code"].IsNullOrEmpty())
-            {
-                return true;
-            }
 #if NETSTANDARD1_6
 
             if (httpRequest.UrlReferrer == null) return false;
