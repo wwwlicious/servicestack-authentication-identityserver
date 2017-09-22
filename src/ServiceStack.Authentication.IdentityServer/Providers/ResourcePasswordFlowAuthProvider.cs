@@ -30,9 +30,14 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
 
         public override object Authenticate(IServiceBase authService, IAuthSession session, Authenticate request)
         {
-            RefreshSettings();          
-            var tokens = Init(authService, ref session, request);
+            RefreshSettings();
 
+            // Get username from request if supplied, otherwise use configured one for m2m
+            AuthProviderSettings.Username = request.UserName ?? AuthProviderSettings.Username;
+            AuthProviderSettings.Password = request.Password ?? AuthProviderSettings.Password;
+      
+            var tokens = Init(authService, ref session, request);
+            
             var reponseToken = TokenCredentialsClient.RequestToken().Result;
 
             if (!string.IsNullOrWhiteSpace(reponseToken.AccessToken))
