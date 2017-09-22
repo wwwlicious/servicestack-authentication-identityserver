@@ -92,6 +92,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
               
                 if (invalidTokens)
                 {
+                    Log.Warn($"Unauthorized request due to invalid tokens in callback request {request.ToJson()}");
                     throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
                 }
 
@@ -117,7 +118,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
 
             if (!session.IsAuthenticated)
             {
-                throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
+              Log.Warn($"Unauthorized request due to invalid access token in callback request {request.ToJson()}");
+              throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
             }
             return OnAuthenticated(authService, session, tokens, new Dictionary<string, string>());
         }
