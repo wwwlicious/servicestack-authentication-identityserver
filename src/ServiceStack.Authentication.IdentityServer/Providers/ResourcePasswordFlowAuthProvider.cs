@@ -1,4 +1,4 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
+// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
@@ -46,6 +46,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 tokens.UserName = tokens.UserName ?? request.UserName;                
                 session.UserName = session.UserName ?? request.UserName;   
                 session.IsAuthenticated = true;
+                authService.SaveSession(session);                
             }
 
             return OnAuthenticated(authService, session, tokens, new Dictionary<string, string>());
