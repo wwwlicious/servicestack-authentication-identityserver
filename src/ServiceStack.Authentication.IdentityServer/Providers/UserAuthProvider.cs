@@ -71,7 +71,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var tokens = Init(authService, ref session, request);
             var httpRequest = authService.Request;
 
-            var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens, authService, request).ConfigureAwait(false);
+            var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens).ConfigureAwait(false);
 
             // We need to get the user to login as we don't have any credentials for them
             if (isInitialRequest)
@@ -80,7 +80,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             }
 
             // We've just returned from Identity Server so we need to get the tokens we've been given
-            if (IsCallbackRequest(authService, request))
+            if (IsCallbackRequest(httpRequest))
             {
                 // If the tokens are not valid then redirect with an error
                 var authTokens = ParseAuthenticateTokens(httpRequest);
@@ -169,14 +169,14 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <param name="httpRequest">Http Request</param>
         /// <param name="authTokens">Auth Tokens</param>
         /// <returns></returns>
-        public async Task<bool> IsInitialAuthenticateRequest(IRequest httpRequest, IAuthTokens authTokens, IServiceBase authService, Authenticate request)
+        public async Task<bool> IsInitialAuthenticateRequest(IRequest httpRequest, IAuthTokens authTokens)
         {
             if (string.IsNullOrEmpty(httpRequest.AbsoluteUri))
             {
                 return false;
             }
 
-            if (IsCallbackRequest(authService, request))
+            if (IsCallbackRequest(httpRequest))
             {
                 return false;
             }
@@ -190,9 +190,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <param name="authService">Authenticating Service</param>
         /// <param name="request">Authenticate Request</param>
         /// <returns></returns>
-        internal bool IsCallbackRequest(IServiceBase authService, Authenticate request)
+        internal bool IsCallbackRequest(IRequest httpRequest)
         {
-            var httpRequest = authService.Request;
             if (string.IsNullOrEmpty(httpRequest.AbsoluteUri))
             {
                 return false;
