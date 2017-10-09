@@ -5,6 +5,7 @@
     <VersionPrefix>4.1.0</VersionPrefix>
     <Authors>Stuart Banks</Authors>
     <TargetFrameworks>netstandard1.6;net45</TargetFrameworks>
+    <TargetFramework Condition=" '$(TargetFramework)' == '' ">net45</TargetFramework>
     <AssemblyName>ServiceStack.Authentication.IdentityServer</AssemblyName>
     <PackageId>ServiceStack.Authentication.IdentityServer</PackageId>
     <PackageTags>ServiceStack;IdentityServer;Authentication</PackageTags>

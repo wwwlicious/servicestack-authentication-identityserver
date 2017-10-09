@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <TargetFrameworks>netcoreapp1.0;net45</TargetFrameworks>
+    <TargetFramework Condition=" '$(TargetFramework)' == '' ">net45</TargetFramework>
     <AssemblyName>ServiceStack.Authentication.IdentityServer.Tests</AssemblyName>
     <PackageId>ServiceStack.Authentication.IdentityServer.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
