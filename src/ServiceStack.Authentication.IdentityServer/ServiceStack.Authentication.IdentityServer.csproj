@@ -23,8 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="ServiceStack.Core" Version="1.0.33" />
     <PackageReference Include="IdentityModel" Version="2.5.1" />
+    <PackageReference Include="ServiceStack.Core" Version="1.0.44" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="2.1.2" />
   </ItemGroup>
 
@@ -34,7 +34,7 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <PackageReference Include="IdentityModel" Version="1.11.0" />
-    <PackageReference Include="ServiceStack" Version="4.0.56" />
+    <PackageReference Include="ServiceStack" Version="4.5.14" />
     <PackageReference Include="Microsoft.IdentityModel.Protocol.Extensions" Version="1.0.2.206221351" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />

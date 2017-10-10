@@ -4,14 +4,13 @@
 namespace ServiceStack.Authentication.IdentityServer
 {
     using System.Collections.Generic;
-    using System.Security.Claims;
     using Auth;
 
     public class IdentityServerAuthTokens : AuthTokens
     {
         public IdentityServerAuthTokens()
         {
-            Claims = new List<Claim>();
+            Claims = new Dictionary<string, string>();
         }
 
         public string IdToken { get; set; }
@@ -32,6 +31,6 @@ namespace ServiceStack.Authentication.IdentityServer
 
         public string Nonce { get; set; }
 
-        public IList<Claim> Claims { get; set; }
+        public IDictionary<string, string> Claims { get; set; }
     }
 }

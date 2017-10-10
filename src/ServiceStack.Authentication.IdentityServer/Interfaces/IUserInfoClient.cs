@@ -3,12 +3,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 namespace ServiceStack.Authentication.IdentityServer.Interfaces
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using System.Security.Claims;
 
     public interface IUserInfoClient
     {
-        Task<IEnumerable<Claim>> GetClaims(string accessToken);
+        Task<IDictionary<string,string>> GetClaims(string accessToken);
     }
 }
