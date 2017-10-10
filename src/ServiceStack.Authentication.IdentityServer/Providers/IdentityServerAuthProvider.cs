@@ -71,11 +71,14 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
 
             if (claims == null) return;
 
-            var identityTokens = tokens as IdentityServerAuthTokens;
+            if (tokens is IdentityServerAuthTokens identityTokens)
+            {
+                identityTokens.Claims = claims;
+            }
 
             foreach (var claim in claims)
             {
-                switch (claim.Type)
+                switch (claim.Key)
                 {
                     case JwtClaimTypes.Subject:
                         tokens.UserId = claim.Value;
@@ -97,7 +100,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                         break;
                 }
 
-                if (AuthProviderSettings.RoleClaimNames != null && AuthProviderSettings.RoleClaimNames.Any(x => x == claim.Type))
+                if (AuthProviderSettings.RoleClaimNames != null && AuthProviderSettings.RoleClaimNames.Any(x => x == claim.Key))
                 {
                     if (userSession.Roles == null)
                     {
@@ -106,7 +109,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                     userSession.Roles.Add(claim.Value);
                 }
 
-                if (AuthProviderSettings.PermissionClaimNames != null && AuthProviderSettings.PermissionClaimNames.Any(x => x == claim.Type))
+                if (AuthProviderSettings.PermissionClaimNames != null && AuthProviderSettings.PermissionClaimNames.Any(x => x == claim.Key))
                 {
                     if (userSession.Permissions == null)
                     {
@@ -114,8 +117,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                     }
                     userSession.Permissions.Add(claim.Value);
                 }
-
-                identityTokens?.Claims.Add(claim);
             }
             LoadUserOAuthProvider(userSession, tokens);
         }

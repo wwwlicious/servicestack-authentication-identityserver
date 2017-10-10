@@ -74,13 +74,13 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var isInitialRequest = await IsInitialAuthenticateRequest(httpRequest, tokens).ConfigureAwait(false);
 
             // We need to get the user to login as we don't have any credentials for them
-            if (isInitialRequest && !IsCallbackRequest(authService, request))
+            if (isInitialRequest)
             {
                 return AuthenticateClient(authService, session, tokens, request.State, request.nonce);
             }
 
             // We've just returned from Identity Server so we need to get the tokens we've been given
-            if (IsCallbackRequest(authService, request))
+            if (IsCallbackRequest(httpRequest))
             {
                 // If the tokens are not valid then redirect with an error
                 var authTokens = ParseAuthenticateTokens(httpRequest);
@@ -92,6 +92,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
               
                 if (invalidTokens)
                 {
+                    Log.Warn($"Unauthorized request due to invalid tokens in callback request {request.ToJson()}");
                     throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
                 }
 
@@ -117,7 +118,8 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
 
             if (!session.IsAuthenticated)
             {
-                throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
+              Log.Warn($"Unauthorized request due to invalid access token in callback request {request.ToJson()}");
+              throw HttpError.Unauthorized(ErrorMessages.NotAuthenticated);
             }
             return OnAuthenticated(authService, session, tokens, new Dictionary<string, string>());
         }
@@ -174,7 +176,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
-            if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, 0, StringComparison.OrdinalIgnoreCase) < 0)
+            if (IsCallbackRequest(httpRequest))
             {
                 return false;
             }
@@ -188,12 +190,16 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
         /// <param name="authService">Authenticating Service</param>
         /// <param name="request">Authenticate Request</param>
         /// <returns></returns>
-        internal bool IsCallbackRequest(IServiceBase authService, Authenticate request)
+        internal bool IsCallbackRequest(IRequest httpRequest)
         {
-            var httpRequest = authService.Request;
             if (string.IsNullOrEmpty(httpRequest.AbsoluteUri))
             {
                 return false;
+            }
+
+            if (!httpRequest.QueryString["code"].IsNullOrEmpty())
+            {
+              return true;
             }
 
             if (httpRequest.AbsoluteUri.IndexOf(CallbackUrl, StringComparison.OrdinalIgnoreCase) != 0)
@@ -201,10 +207,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
                 return false;
             }
 
-            if (!httpRequest.QueryString["code"].IsNullOrEmpty())
-            {
-                return true;
-            }
 #if NETSTANDARD1_6
 
             if (httpRequest.UrlReferrer == null) return false;

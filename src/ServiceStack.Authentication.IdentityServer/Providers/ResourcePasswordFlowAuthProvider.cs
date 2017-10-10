@@ -1,4 +1,4 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public
+// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
@@ -30,15 +30,23 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
 
         public override object Authenticate(IServiceBase authService, IAuthSession session, Authenticate request)
         {
-            RefreshSettings();          
-            var tokens = Init(authService, ref session, request);
+            RefreshSettings();
 
+            // Get username from request if supplied, otherwise use configured one for m2m
+            AuthProviderSettings.Username = request.UserName ?? AuthProviderSettings.Username;
+            AuthProviderSettings.Password = request.Password ?? AuthProviderSettings.Password;
+      
+            var tokens = Init(authService, ref session, request);
+            
             var reponseToken = TokenCredentialsClient.RequestToken().Result;
 
             if (!string.IsNullOrWhiteSpace(reponseToken.AccessToken))
             {
                 tokens.AccessToken = reponseToken.AccessToken;
+                tokens.UserName = tokens.UserName ?? request.UserName;                
+                session.UserName = session.UserName ?? request.UserName;   
                 session.IsAuthenticated = true;
+                authService.SaveSession(session);                
             }
 
             return OnAuthenticated(authService, session, tokens, new Dictionary<string, string>());

@@ -7,7 +7,6 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Security.Claims;
     using Interfaces;
     using Logging;
 
@@ -22,7 +21,7 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
             this.appSettings = appSettings;
         }
 
-        public async Task<IEnumerable<Claim>> GetClaims(string accessToken)
+        public async Task<IDictionary<string,string>> GetClaims(string accessToken)
         {
 #if NETSTANDARD1_6
             var client = new IdentityModel.Client.UserInfoClient(appSettings.UserInfoUrl);
@@ -32,7 +31,7 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
                 Log.Error($"Error calling endpoint {appSettings.UserInfoUrl} - {response.Error}");
             }
 
-            return response.Claims.Select(x => new Claim(x.Type, x.Value));
+            return response.Claims.ToDictionary(x => x.Type, x => x.Value);
 #elif NET45
             var client = new IdentityModel.Client.UserInfoClient(new Uri(appSettings.UserInfoUrl), accessToken);
             var response = await client.GetAsync().ConfigureAwait(false);
@@ -40,7 +39,7 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
             {
                 Log.Error($"Error calling endpoint {appSettings.UserInfoUrl} - {response.ErrorMessage}");
             }
-            return response.Claims.Select(x => new Claim(x.Item1, x.Item2));
+            return response.Claims.ToDictionary(x => x.Item1, x => x.Item2);
 #endif
         }
     }
