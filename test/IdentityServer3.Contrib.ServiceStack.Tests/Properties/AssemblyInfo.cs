@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IdentityServer3.Contrib.ServiceStack.Tests")]
 [assembly: AssemblyDescription("Unit tests for IdentityServer3.Contrib.ServiceStack")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("MacLean Electrical")]
+[assembly: AssemblyCompany("wwwlicious")]
 [assembly: AssemblyProduct("IdentityServer3.Contrib.ServiceStack.Tests")]
 [assembly: AssemblyCopyright("Copyright ©2016")]
 [assembly: AssemblyTrademark("")]
