@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Owin.SelfHost" Version="3.1.0" />
@@ -9,5 +10,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\IdentityServer3.Contrib.ServiceStack\IdentityServer3.Contrib.ServiceStack.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="idsrv3test.pfx" />
+    <EmbeddedResource Include="idsrv3test.pfx" />
   </ItemGroup>
 </Project>
