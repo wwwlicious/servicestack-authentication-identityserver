@@ -9,7 +9,7 @@
     <PackageLicenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</PackageLicenseUrl>
     <PackageId>ServiceStack.Authentication.IdentityServer</PackageId>
     <PackageTags>ServiceStack;IdentityServer;Authentication</PackageTags>
-    <PackageReleaseNotes>dotnet core release</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/wwwlicious/servicestack-authentication-identityserver/releases</PackageReleaseNotes>
     <PackageIconUrl>https://servicestack.net/img/logo-32.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/wwwlicious/servicestack-authentication-identityserver</PackageProjectUrl>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
