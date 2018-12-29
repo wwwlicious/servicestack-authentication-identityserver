@@ -6,6 +6,8 @@ ServiceStack.Authentication.IdentityServer : [![NuGet version](https://badge.fur
 
 IdentityServer3.Contrib.ServiceStack : [![NuGet version](https://badge.fury.io/nu/IdentityServer3.Contrib.ServiceStack.svg)](https://badge.fury.io/nu/IdentityServer3.Contrib.ServiceStack)
 
+IdentityServer4.Contrib.ServiceStack : [![NuGet version](https://badge.fury.io/nu/IdentityServer4.Contrib.ServiceStack.svg)](https://badge.fury.io/nu/IdentityServer4.Contrib.ServiceStack)
+
 A plugin for [ServiceStack](https://servicestack.net/) and [IdentityServer](https://identityserver.github.io/) that provides [OpenIDConnect](http://openid.net/connect/) / [OAuth 2.0](http://oauth.net/2/) Single Sign-On Authentication for a Client that consumes other services (e.g. in a microservices-based environment).
 
 This enables a client servicestack instance to be redirected to an IdentityServer instance when they attempt to access a secure service without the necessary credentials.  The user is required to provide credentials to the IdentityServer instance such that on succesful authenticated, the user is redirected back to the servicestack instance which can authorize the user to access the secure service based on claims-based credentials provided by IdentityServer.
