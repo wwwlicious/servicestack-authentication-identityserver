@@ -3,11 +3,19 @@
     <TargetFramework>net45</TargetFramework>
     <Description>An IdentityServer plugin for ServiceStack Authentication</Description>
     <Copyright>Copyright © 2016</Copyright>
-    <Company>wwwlicious</Company>
     <AssemblyTitle>ServiceStack.IdentityServer.Provider</AssemblyTitle>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</PackageLicenseUrl>
+    <PackageIconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/wwwlicious/servicestack-authentication-identityserver</PackageProjectUrl>
+    <PackageTags>ServiceStack;IdentityServer</PackageTags>
+    <PackageReleaseNotes>https://github.com/wwwlicious/servicestack-authentication-identityserver/releases</PackageReleaseNotes>
+    <Authors>Stuart Banks;Scott Mackay</Authors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="IdentityServer3" Version="2.5.0" />
+    <PackageReference Include="SourceLink.Create.GitHub" Version="2.8.3" PrivateAssets="all" />
   </ItemGroup>
   
 </Project>

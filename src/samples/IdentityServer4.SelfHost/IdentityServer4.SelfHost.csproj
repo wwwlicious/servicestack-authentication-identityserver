@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IdentityServer4.Contrib.ServiceStack\IdentityServer4.Contrib.ServiceStack.csproj" />
+    <ProjectReference Include="..\..\IdentityServer4.Contrib.ServiceStack\IdentityServer4.Contrib.ServiceStack.csproj" />
   </ItemGroup>
 
   <ItemGroup>

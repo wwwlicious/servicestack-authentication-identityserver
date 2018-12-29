@@ -9,7 +9,7 @@
     <PackageReference Include="Serilog.Sinks.Literate" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IdentityServer3.Contrib.ServiceStack\IdentityServer3.Contrib.ServiceStack.csproj" />
+    <ProjectReference Include="..\..\IdentityServer3.Contrib.ServiceStack\IdentityServer3.Contrib.ServiceStack.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="idsrv3test.pfx" />

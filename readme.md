@@ -90,6 +90,7 @@ new Client
 ```
 
 Add the following Scope to the Identity Server Scope data store (example below is assuming IdentityServer In-Memory Scope is being used).
+
 ```csharp
 new Scope
 {
