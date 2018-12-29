@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net452</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IdentityServer3.Contrib.ServiceStack\IdentityServer3.Contrib.ServiceStack.csproj" />
+    <ProjectReference Include="..\..\IdentityServer3.Contrib.ServiceStack\IdentityServer3.Contrib.ServiceStack.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="4.9.2" />

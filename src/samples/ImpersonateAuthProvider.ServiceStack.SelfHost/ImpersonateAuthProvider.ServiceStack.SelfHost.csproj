@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\ServiceStack.Authentication.IdentityServer\ServiceStack.Authentication.IdentityServer.csproj" />
+        <ProjectReference Include="..\..\ServiceStack.Authentication.IdentityServer\ServiceStack.Authentication.IdentityServer.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Update="Views\**\*">

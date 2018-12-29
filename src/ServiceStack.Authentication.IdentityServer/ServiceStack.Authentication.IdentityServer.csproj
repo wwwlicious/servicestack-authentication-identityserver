@@ -2,20 +2,17 @@
 
   <PropertyGroup>
     <Description>A ServiceStack plugin for IdentityServer.</Description>
-    <VersionPrefix>4.1.0</VersionPrefix>
     <Authors>Stuart Banks;Scott Mackay</Authors>
     <TargetFrameworks>netstandard1.6;net45</TargetFrameworks>
-    <AssemblyName>ServiceStack.Authentication.IdentityServer</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</PackageLicenseUrl>
     <PackageId>ServiceStack.Authentication.IdentityServer</PackageId>
     <PackageTags>ServiceStack;IdentityServer;Authentication</PackageTags>
     <PackageReleaseNotes>dotnet core release</PackageReleaseNotes>
     <PackageIconUrl>https://servicestack.net/img/logo-32.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/wwwlicious/servicestack-authentication-identityserver</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</PackageLicenseUrl>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
@@ -34,6 +31,10 @@
     <PackageReference Include="Microsoft.IdentityModel.Protocol.Extensions" Version="1.0.2.206221351" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
   </ItemGroup>
 
 </Project>
