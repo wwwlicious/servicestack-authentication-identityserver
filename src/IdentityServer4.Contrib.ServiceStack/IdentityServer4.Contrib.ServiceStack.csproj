@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>An IdentityServer plugin for ServiceStack Authentication</Description>
     <VersionPrefix>4.0.0</VersionPrefix>
-    <Authors>Stuart Banks</Authors>
+    <Authors>Stuart Banks;Scott Mackay</Authors>
     <TargetFrameworks>netstandard1.4;net452</TargetFrameworks>
     <AssemblyName>IdentityServer4.Contrib.ServiceStack</AssemblyName>
     <PackageId>IdentityServer4.Contrib.ServiceStack</PackageId>
@@ -12,7 +12,7 @@
     <PackageIconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg</PackageIconUrl>
     <PackageProjectUrl>https://github.com/wwwlicious/servicestack-authentication-identityserver</PackageProjectUrl>
     <PackageLicenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</PackageLicenseUrl>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.4' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
