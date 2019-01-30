@@ -24,7 +24,6 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
 
         public async Task<IEnumerable<Claim>> GetClaims(string accessToken)
         {
-#if NETSTANDARD1_6
             var client = new IdentityModel.Client.UserInfoClient(appSettings.UserInfoUrl);
             var response = await client.GetAsync(accessToken).ConfigureAwait(false);
             if (response.IsError)
@@ -33,15 +32,6 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
             }
 
             return response.Claims.Select(x => new Claim(x.Type, x.Value));
-#elif NET45
-            var client = new IdentityModel.Client.UserInfoClient(new Uri(appSettings.UserInfoUrl), accessToken);
-            var response = await client.GetAsync().ConfigureAwait(false);
-            if (response.IsError)
-            {
-                Log.Error($"Error calling endpoint {appSettings.UserInfoUrl} - {response.ErrorMessage}");
-            }
-            return response.Claims.Select(x => new Claim(x.Item1, x.Item2));
-#endif
         }
     }
 }

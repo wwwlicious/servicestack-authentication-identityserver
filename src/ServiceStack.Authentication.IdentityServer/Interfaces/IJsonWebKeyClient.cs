@@ -8,10 +8,6 @@ namespace ServiceStack.Authentication.IdentityServer.Interfaces
 
     public interface IJsonWebKeyClient
     {
-#if NETSTANDARD1_6
         Task<IList<Microsoft.IdentityModel.Tokens.SecurityKey>> GetAsync();
-#elif NET45
-        Task<IList<System.IdentityModel.Tokens.SecurityToken>> GetAsync();
-#endif
     }
 }

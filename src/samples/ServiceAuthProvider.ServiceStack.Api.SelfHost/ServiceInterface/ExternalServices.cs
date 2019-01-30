@@ -11,7 +11,7 @@
         {
             var session = this.GetSession();
 
-            if (session.HasPermission("CanSeeAllOrders"))
+            if (session.HasPermission("CanSeeAllOrders", null))
             {
                 return new HelloResponse
                 {
