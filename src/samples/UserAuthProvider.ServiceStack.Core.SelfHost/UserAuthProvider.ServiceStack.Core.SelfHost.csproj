@@ -6,7 +6,6 @@
     <AssemblyName>UserAuthProvider.ServiceStack.Core.SelfHost</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>UserAuthProvider.ServiceStack.Core.SelfHost</PackageId>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>

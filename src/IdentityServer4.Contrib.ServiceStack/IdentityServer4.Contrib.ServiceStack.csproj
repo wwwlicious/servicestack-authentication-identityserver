@@ -13,7 +13,6 @@
     <PackageReleaseNotes>https://github.com/wwwlicious/servicestack-authentication-identityserver/releases</PackageReleaseNotes>
     <PackageIconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg</PackageIconUrl>
     <PackageProjectUrl>https://github.com/wwwlicious/servicestack-authentication-identityserver</PackageProjectUrl>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
