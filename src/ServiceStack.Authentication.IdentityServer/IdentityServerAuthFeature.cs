@@ -126,11 +126,7 @@ namespace ServiceStack.Authentication.IdentityServer
                 return;
             }
 
-#if NETSTANDARD1_6
             var authTokens = session.GetAuthTokens(IdentityServerAuthProvider.Name);
-#elif NET45
-            var authTokens = session.GetOAuthTokens(IdentityServerAuthProvider.Name);
-#endif            
             if (string.IsNullOrEmpty(authTokens?.AccessToken))
             {
                 return;

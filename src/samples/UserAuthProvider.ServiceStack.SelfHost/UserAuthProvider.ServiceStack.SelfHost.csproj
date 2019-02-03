@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
@@ -16,6 +16,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ServiceStack.Razor" Version="4.0.56" />
+    <PackageReference Include="ServiceStack.Razor" Version="5.4.00" />
   </ItemGroup>
 </Project>

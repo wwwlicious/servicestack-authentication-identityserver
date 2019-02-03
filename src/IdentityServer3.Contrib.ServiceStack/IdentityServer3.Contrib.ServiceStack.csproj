@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <Description>An IdentityServer plugin for ServiceStack Authentication</Description>
     <Copyright>Copyright © 2016</Copyright>
     <AssemblyTitle>ServiceStack.IdentityServer.Provider</AssemblyTitle>

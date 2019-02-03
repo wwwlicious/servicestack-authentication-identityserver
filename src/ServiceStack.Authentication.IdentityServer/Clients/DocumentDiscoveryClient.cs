@@ -24,7 +24,6 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
         {
             IJsonServiceClient client = new JsonServiceClient(appSettings.AuthRealm);
 
-#if NETSTANDARD1_6
             string document;
             try
             {
@@ -41,25 +40,6 @@ namespace ServiceStack.Authentication.IdentityServer.Clients
             }
 
             var configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration(document);
-#elif NET45
-            Dictionary<string, object> document;            
-            try
-            {
-                document = await client.GetAsync<Dictionary<string, object>>(endpoint)
-                                       .ConfigureAwait(false);
-            }
-            catch (AggregateException exception)
-            {
-                foreach (var ex in exception.InnerExceptions)
-                {
-                    Log.Error($"Error occurred requesting document data from {endpoint}", ex);
-                }
-                return null;
-            }
-            
-            var configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnectConfiguration(document);
-#endif
-
             return new DocumentDiscoveryResult
             {
                 AuthorizeUrl = configuration.AuthorizationEndpoint,
