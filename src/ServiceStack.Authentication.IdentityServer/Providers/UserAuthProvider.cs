@@ -205,7 +205,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             {
                 return true;
             }
-#if NETSTANDARD1_6
 
             if (httpRequest.UrlReferrer == null) return false;
 
@@ -213,11 +212,6 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var authRealm = new Uri(AuthRealm);
 
             return referrer.AbsoluteUri.IndexOf(authRealm.AbsoluteUri, StringComparison.OrdinalIgnoreCase) == 0;
-
-#elif NET45
-            return httpRequest.UrlReferrer != null && 
-                   httpRequest.UrlReferrer.AbsoluteUri.IndexOf(AuthRealm, StringComparison.InvariantCultureIgnoreCase) == 0;
-#endif
         }
 
         /// <summary>Authenticates the Client by Redirecting them to the Authorize Url Endpoint of Identity Server</summary>
@@ -340,12 +334,7 @@ namespace ServiceStack.Authentication.IdentityServer.Providers
             var idAuthTokens = tokens as IdentityServerAuthTokens;
             if (!string.IsNullOrWhiteSpace(idAuthTokens?.IdToken))
             {
-#if NETSTANDARD1_6
-
                 var jwtToken = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(idAuthTokens.IdToken);
-#elif NET45
-                var jwtToken = new System.IdentityModel.Tokens.JwtSecurityToken(idAuthTokens.IdToken);
-#endif
                 idAuthTokens.Issuer = jwtToken.Issuer;
                 idAuthTokens.Subject = jwtToken.Subject;
 
